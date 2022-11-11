@@ -6,6 +6,7 @@ public class SpellingErrorGeneratorGerman
 {
     private final String[] letters = new String[]{"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "ä", "ö", "ü", "ß", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "Ä", "Ö", "Ü","Ae","Oe","Ue","Ae","Oe","Ue","ae","oe","ue","AE","OE","UE"};
     private final HashMap<String,String[]> similarLetters = new HashMap<>();
+    private final HashMap<String, String[]> wrongFillerWords = new HashMap<>(); // nach => [zu, in];
     private String originalText = null;
     private String errorText = null;
     private final float ERROR_CHANCES_VARIATION_FACTOR_MIN = 0.0f;
@@ -66,6 +67,9 @@ public class SpellingErrorGeneratorGerman
     private final float DER_DIE_DAS_FAILURE_CHANCE_MIN = 0.0f;
     private final float DER_DIE_DAS_FAILURE_CHANCE_MAX = 0.2f;
     private float derDieDasFailureChance;
+    private final float WRONG_FILLER_WORD_FAILURE_CHANCE_MIN = 0.0f;
+    private final float WRONG_FILLER_WORD_FAILURE_CHANCE_MAX = 0.2f;
+    private float wrongFillerWordFailureChance;
 
     public SpellingErrorGeneratorGerman()
     {

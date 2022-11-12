@@ -20,6 +20,12 @@ public class SpellingErrorGeneratorGerman
     private final HashMap<String, String[]> wrongFillerWords = new HashMap<>(); // nach => [zu, in];
     private String originalText = null;
     private String errorText = null;
+
+    private final int DELETION = 2;
+    private final int INSERTION = 1;
+    private final int SUBSTITUTION = 0;
+    private final ArrayList<Integer> editOperationAtIndex = new ArrayList<>();
+
     private Random random = new Random();
     private final float ERROR_CHANCES_VARIATION_FACTOR_MIN = 0.0f;
     private final float ERROR_CHANCES_VARIATION_FACTOR_MAX = 1.0f;
@@ -136,8 +142,8 @@ public class SpellingErrorGeneratorGerman
     private void initSimilarLetterList()
     {
         final ArrayList<String[]> similarLetterList = new ArrayList<>();
-        similarLetterList.add(new String[]{"a", "e"});
-        similarLetterList.add(new String[]{"o", "u"});
+        similarLetterList.add(new String[]{"a", "e", "ä"});
+        similarLetterList.add(new String[]{"o", "u", "ö", "ü"});
         similarLetterList.add(new String[]{"p", "b", "d", "t", "g"});
         similarLetterList.add(new String[]{"P", "B"});
         similarLetterList.add(new String[]{"c", "k", "q"});
@@ -225,6 +231,9 @@ public class SpellingErrorGeneratorGerman
         wrongWordEndings.add("est");
         wrongWordEndings.add("s");
         wrongWordEndings.add("es");
+        wrongWordEndings.add("chen");
+        wrongWordEndings.add("lein");
+        wrongWordEndings.add("er");
     }
 
     private void generateHashMapFromListOfStringArrays(final HashMap<String, String[]> toFill, final ArrayList<String[]> listOfStringArrays)
@@ -312,8 +321,12 @@ public class SpellingErrorGeneratorGerman
         return null;
     }
 
-    //word error processing
-    //word error translation processing
+    //process word replacements
+    private void processWordReplacements()
+    {
+        //itera through error text
+
+    }
 
 
 }

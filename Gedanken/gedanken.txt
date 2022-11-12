@@ -68,4 +68,9 @@ Fehlergenerator Fähigkeiten (generiert aus fehlerfreien Text, fehlerbehafteten 
 Modeloptimierung:
 - Wahrscheinlich ähnliche Strategie wie bei der Zahlenaddition möglich. (Fehlerkorrekturmodelle für vorangegangene Modelle)
 
-1. 
+1. Ein zeichen zusätzlich im ErrorText entspricht einer hinzufügung
+2. Ein zeichen zuwenig einer Deletion
+3. Alles andere sind Ersetzungen.
+4. Wird in der nachfolgenden Iteration einer ersetzung ersetzt, so blreibt es eine Ersetzung.
+5. Wird eine ersetzung entfernt so wird es eine Deletion
+6. Wird eine hinzufügung entfernt so wird das element der operation entfernt.

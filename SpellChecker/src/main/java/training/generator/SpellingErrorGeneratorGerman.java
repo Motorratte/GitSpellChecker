@@ -131,6 +131,12 @@ public class SpellingErrorGeneratorGerman
         generateHashMapFromListOfStringArrays(similarLetters, similarLetterList);
     }
 
+    private void initWrongFillerWords()
+    {
+        final ArrayList<String[]> wrongFillerWordsList = new ArrayList<>();
+        wrongFillerWordsList.add(new String[]{"zu"})
+    }
+
     private void generateHashMapFromListOfStringArrays(final HashMap<String, String[]> toFill, final ArrayList<String[]> listOfStringArrays)
     {
         //each element becomes key and the rest of the elements become the value

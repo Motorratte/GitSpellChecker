@@ -67,3 +67,5 @@ Fehlergenerator Fähigkeiten (generiert aus fehlerfreien Text, fehlerbehafteten 
 
 Modeloptimierung:
 - Wahrscheinlich ähnliche Strategie wie bei der Zahlenaddition möglich. (Fehlerkorrekturmodelle für vorangegangene Modelle)
+
+1. 

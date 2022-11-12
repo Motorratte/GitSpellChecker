@@ -2,6 +2,7 @@ package training.generator;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Random;
 
 public class SpellingErrorGeneratorGerman
@@ -13,6 +14,9 @@ public class SpellingErrorGeneratorGerman
     private final HashMap<String, String[]> derDieDasMap = new HashMap<>();
 
     private final HashMap<String, String[]> dasDaßDassMap = new HashMap<>();
+
+    private final List<String> wrongWordBeginnings = new ArrayList<>();
+    private final List<String> wrongWordEndings = new ArrayList<>();
     private final HashMap<String, String[]> wrongFillerWords = new HashMap<>(); // nach => [zu, in];
     private String originalText = null;
     private String errorText = null;
@@ -63,6 +67,12 @@ public class SpellingErrorGeneratorGerman
     private final float WORD_TRANSITION_FAILURE_CHANCE_MIN = 0.0f;
     private final float WORD_TRANSITION_FAILURE_CHANCE_MAX = 0.2f;
     private float wordTransitionFailureChance;
+    private float WRONG_WORD_BEGINNING_CHANCE_MIN = 0.0f;
+    private float WRONG_WORD_BEGINNING_CHANCE_MAX = 0.2f;
+    private float wrongWordBeginningChance;
+    private float WRONG_WORD_ENDING_CHANCE_MIN = 0.0f;
+    private float WRONG_WORD_ENDING_CHANCE_MAX = 0.2f;
+    private float wrongWordEndingChance;
     private final float WORD_BLENDING_CHANCE_MIN = 0.0f;
     private final float WORD_BLENDING_CHANCE_MAX = 0.2f;
     private float wordBlendingChance;
@@ -87,6 +97,8 @@ public class SpellingErrorGeneratorGerman
         updateFactors();
         initDasDaßDassMap();
         initDerDieDasMap();
+        initWrongWordBeginnings();
+        initWrongWordEndings();
     }
 
     private float getRandomValueBetween(float min, float max)
@@ -97,25 +109,27 @@ public class SpellingErrorGeneratorGerman
     public void updateFactors()
     {
         errorChancesVariationFactor = getRandomValueBetween(ERROR_CHANCES_VARIATION_FACTOR_MIN, ERROR_CHANCES_VARIATION_FACTOR_MAX);
-        randomSymbolInsertionChance = getRandomValueBetween(RANDOM_SYMBOL_INSERTION_CHANCE_MIN, RANDOM_SYMBOL_INSERTION_CHANCE_MAX);
-        randomSymbolDeletionChance = getRandomValueBetween(RANDOM_SYMBOL_DELETION_CHANCE_MIN, RANDOM_SYMBOL_DELETION_CHANCE_MAX);
-        randomSymbolSubstitutionChance = getRandomValueBetween(RANDOM_SYMBOL_SUBSTITUTION_CHANCE_MIN, RANDOM_SYMBOL_SUBSTITUTION_CHANCE_MAX);
-        randomCommaInsertionChance = getRandomValueBetween(RANDOM_COMMA_INSERTION_CHANCE_MIN, RANDOM_COMMA_INSERTION_CHANCE_MAX);
-        randomCommaDeletionChance = getRandomValueBetween(RANDOM_COMMA_DELETION_CHANCE_MIN, RANDOM_COMMA_DELETION_CHANCE_MAX);
-        randomSymbolTranspositionChance = getRandomValueBetween(RANDOM_SYMBOL_TRANSPOSITION_CHANCE_MIN, RANDOM_SYMBOL_TRANSPOSITION_CHANCE_MAX);
-        upperLowerCaseFailureChance = getRandomValueBetween(UPPER_LOWER_CASE_FAILURE_CHANCE_MIN, UPPER_LOWER_CASE_FAILURE_CHANCE_MAX);
-        upperLowerCaseFailureChanceForFirstLetter = getRandomValueBetween(UPPER_LOWER_CASE_FAILURE_CHANCE_FOR_FIRST_LETTER_MIN, UPPER_LOWER_CASE_FAILURE_CHANCE_FOR_FIRST_LETTER_MAX);
-        emptySpaceInsertionChance = getRandomValueBetween(EMPTY_SPACE_INSERTION_CHANCE_MIN, EMPTY_SPACE_INSERTION_CHANCE_MAX);
-        emptySpaceDeletionChance = getRandomValueBetween(EMPTY_SPACE_DELETION_CHANCE_MIN, EMPTY_SPACE_DELETION_CHANCE_MAX);
-        doubleLetterFailureChance = getRandomValueBetween(DOUBLE_LETTER_FAILURE_CHANCE_MIN, DOUBLE_LETTER_FAILURE_CHANCE_MAX);
-        similarLetterFailureChance = getRandomValueBetween(SIMILAR_LETTER_FAILURE_CHANCE_MIN, SIMILAR_LETTER_FAILURE_CHANCE_MAX);
-        mistypeFailureChance = getRandomValueBetween(MISTYPE_FAILURE_CHANCE_MIN, MISTYPE_FAILURE_CHANCE_MAX);
-        wordTransitionFailureChance = getRandomValueBetween(WORD_TRANSITION_FAILURE_CHANCE_MIN, WORD_TRANSITION_FAILURE_CHANCE_MAX);
-        wordBlendingChance = getRandomValueBetween(WORD_BLENDING_CHANCE_MIN, WORD_BLENDING_CHANCE_MAX);
-        formOfAddressFailureChance = getRandomValueBetween(FORM_OF_ADDRESS_FAILURE_CHANCE_MIN, FORM_OF_ADDRESS_FAILURE_CHANCE_MAX);
-        dasDaßDassFailureChance = getRandomValueBetween(DAS_DAß_DASS_FAILURE_CHANCE_MIN, DAS_DAß_DASS_FAILURE_CHANCE_MAX);
-        derDieDasFailureChance = getRandomValueBetween(DER_DIE_DAS_FAILURE_CHANCE_MIN, DER_DIE_DAS_FAILURE_CHANCE_MAX);
-        wrongFillerWordFailureChance = getRandomValueBetween(WRONG_FILLER_WORD_FAILURE_CHANCE_MIN, WRONG_FILLER_WORD_FAILURE_CHANCE_MAX);
+        randomSymbolInsertionChance = getRandomValueBetween(RANDOM_SYMBOL_INSERTION_CHANCE_MIN, RANDOM_SYMBOL_INSERTION_CHANCE_MAX) * errorChancesVariationFactor;
+        randomSymbolDeletionChance = getRandomValueBetween(RANDOM_SYMBOL_DELETION_CHANCE_MIN, RANDOM_SYMBOL_DELETION_CHANCE_MAX) * errorChancesVariationFactor;
+        randomSymbolSubstitutionChance = getRandomValueBetween(RANDOM_SYMBOL_SUBSTITUTION_CHANCE_MIN, RANDOM_SYMBOL_SUBSTITUTION_CHANCE_MAX) * errorChancesVariationFactor;
+        randomCommaInsertionChance = getRandomValueBetween(RANDOM_COMMA_INSERTION_CHANCE_MIN, RANDOM_COMMA_INSERTION_CHANCE_MAX) * errorChancesVariationFactor;
+        randomCommaDeletionChance = getRandomValueBetween(RANDOM_COMMA_DELETION_CHANCE_MIN, RANDOM_COMMA_DELETION_CHANCE_MAX) * errorChancesVariationFactor;
+        randomSymbolTranspositionChance = getRandomValueBetween(RANDOM_SYMBOL_TRANSPOSITION_CHANCE_MIN, RANDOM_SYMBOL_TRANSPOSITION_CHANCE_MAX) * errorChancesVariationFactor;
+        upperLowerCaseFailureChance = getRandomValueBetween(UPPER_LOWER_CASE_FAILURE_CHANCE_MIN, UPPER_LOWER_CASE_FAILURE_CHANCE_MAX) * errorChancesVariationFactor;
+        upperLowerCaseFailureChanceForFirstLetter = getRandomValueBetween(UPPER_LOWER_CASE_FAILURE_CHANCE_FOR_FIRST_LETTER_MIN, UPPER_LOWER_CASE_FAILURE_CHANCE_FOR_FIRST_LETTER_MAX) * errorChancesVariationFactor;
+        emptySpaceInsertionChance = getRandomValueBetween(EMPTY_SPACE_INSERTION_CHANCE_MIN, EMPTY_SPACE_INSERTION_CHANCE_MAX) * errorChancesVariationFactor;
+        emptySpaceDeletionChance = getRandomValueBetween(EMPTY_SPACE_DELETION_CHANCE_MIN, EMPTY_SPACE_DELETION_CHANCE_MAX)* errorChancesVariationFactor;
+        doubleLetterFailureChance = getRandomValueBetween(DOUBLE_LETTER_FAILURE_CHANCE_MIN, DOUBLE_LETTER_FAILURE_CHANCE_MAX) * errorChancesVariationFactor;
+        similarLetterFailureChance = getRandomValueBetween(SIMILAR_LETTER_FAILURE_CHANCE_MIN, SIMILAR_LETTER_FAILURE_CHANCE_MAX) * errorChancesVariationFactor;
+        mistypeFailureChance = getRandomValueBetween(MISTYPE_FAILURE_CHANCE_MIN, MISTYPE_FAILURE_CHANCE_MAX) * errorChancesVariationFactor;
+        wordTransitionFailureChance = getRandomValueBetween(WORD_TRANSITION_FAILURE_CHANCE_MIN, WORD_TRANSITION_FAILURE_CHANCE_MAX) * errorChancesVariationFactor;
+        wordBlendingChance = getRandomValueBetween(WORD_BLENDING_CHANCE_MIN, WORD_BLENDING_CHANCE_MAX) * errorChancesVariationFactor;
+        formOfAddressFailureChance = getRandomValueBetween(FORM_OF_ADDRESS_FAILURE_CHANCE_MIN, FORM_OF_ADDRESS_FAILURE_CHANCE_MAX) * errorChancesVariationFactor;
+        dasDaßDassFailureChance = getRandomValueBetween(DAS_DAß_DASS_FAILURE_CHANCE_MIN, DAS_DAß_DASS_FAILURE_CHANCE_MAX) * errorChancesVariationFactor;
+        derDieDasFailureChance = getRandomValueBetween(DER_DIE_DAS_FAILURE_CHANCE_MIN, DER_DIE_DAS_FAILURE_CHANCE_MAX) * errorChancesVariationFactor;
+        wrongFillerWordFailureChance = getRandomValueBetween(WRONG_FILLER_WORD_FAILURE_CHANCE_MIN, WRONG_FILLER_WORD_FAILURE_CHANCE_MAX) * errorChancesVariationFactor;
+        wrongWordBeginningChance = getRandomValueBetween(WRONG_WORD_BEGINNING_CHANCE_MIN, WRONG_WORD_BEGINNING_CHANCE_MAX) * errorChancesVariationFactor;
+        wrongWordEndingChance = getRandomValueBetween(WRONG_WORD_ENDING_CHANCE_MIN, WRONG_WORD_ENDING_CHANCE_MAX) * errorChancesVariationFactor;
     }
 
 
@@ -182,6 +196,35 @@ public class SpellingErrorGeneratorGerman
         dasDaßDassMap.put("Daß", new String[]{"Das", "Dass"});
         dasDaßDassMap.put("dass", new String[]{"das", "daß"});
         dasDaßDassMap.put("Dass", new String[]{"Das", "Daß"});
+    }
+
+    private void addAnyWordToListInUpperCase(ArrayList<String> list)
+    {
+        final int listSize = list.size();
+        for (int i = 0; i < listSize; i++)
+        {
+            list.set(i, (list.get(i).charAt(0) - 32) + list.get(i).substring(1));
+        }
+    }
+    private void initWrongWordBeginnings()
+    {
+        wrongWordBeginnings.add("ge");
+        wrongWordBeginnings.add("ver");
+        wrongWordBeginnings.add("ent");
+        wrongWordBeginnings.add("be");
+        wrongWordBeginnings.add("un");
+    }
+
+    private void initWrongWordEndings()
+    {
+        wrongWordEndings.add("en");
+        wrongWordEndings.add("st");
+        wrongWordEndings.add("t");
+        wrongWordEndings.add("te");
+        wrongWordEndings.add("ten");
+        wrongWordEndings.add("est");
+        wrongWordEndings.add("s");
+        wrongWordEndings.add("es");
     }
 
     private void generateHashMapFromListOfStringArrays(final HashMap<String, String[]> toFill, final ArrayList<String[]> listOfStringArrays)
@@ -263,6 +306,14 @@ public class SpellingErrorGeneratorGerman
         mistypeLetters.put('ß', new char[]{'ü', 'p', '´', '?'});
     }
 
+
+    public String generateErrorText()
+    {
+        return null;
+    }
+
+    //word error processing
+    //word error translation processing
 
 
 }

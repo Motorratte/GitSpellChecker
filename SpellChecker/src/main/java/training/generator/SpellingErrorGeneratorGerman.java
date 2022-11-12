@@ -9,6 +9,10 @@ public class SpellingErrorGeneratorGerman
     private final String[] letters = new String[]{"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "ä", "ö", "ü", "ß", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "Ä", "Ö", "Ü", "Ae", "Oe", "Ue", "Ae", "Oe", "Ue", "ae", "oe", "ue", "AE", "OE", "UE"};
     private final HashMap<String, String[]> similarLetters = new HashMap<>();
     private final HashMap<Character, char[]> mistypeLetters = new HashMap<>();
+
+    private final HashMap<String, String[]> derDieDasMap = new HashMap<>();
+
+    private final HashMap<String, String[]> dasDaßDassMap = new HashMap<>();
     private final HashMap<String, String[]> wrongFillerWords = new HashMap<>(); // nach => [zu, in];
     private String originalText = null;
     private String errorText = null;
@@ -79,7 +83,10 @@ public class SpellingErrorGeneratorGerman
     {
         initSimilarLetterList();
         initMistypeLetters();
-        initFactors();
+        initWrongFillerWords();
+        updateFactors();
+        initDasDaßDassMap();
+        initDerDieDasMap();
     }
 
     private float getRandomValueBetween(float min, float max)
@@ -87,7 +94,7 @@ public class SpellingErrorGeneratorGerman
         return min + random.nextFloat() * (max - min);
     }
 
-    private void initFactors()
+    public void updateFactors()
     {
         errorChancesVariationFactor = getRandomValueBetween(ERROR_CHANCES_VARIATION_FACTOR_MIN, ERROR_CHANCES_VARIATION_FACTOR_MAX);
         randomSymbolInsertionChance = getRandomValueBetween(RANDOM_SYMBOL_INSERTION_CHANCE_MIN, RANDOM_SYMBOL_INSERTION_CHANCE_MAX);
@@ -131,10 +138,50 @@ public class SpellingErrorGeneratorGerman
         generateHashMapFromListOfStringArrays(similarLetters, similarLetterList);
     }
 
-    private void initWrongFillerWords()
+    private void initWrongFillerWords() //experimental
     {
         final ArrayList<String[]> wrongFillerWordsList = new ArrayList<>();
-        wrongFillerWordsList.add(new String[]{"zu"})
+        wrongFillerWordsList.add(new String[]{"zu", "um", "nach", "vor", "über", "unter", "gegen", "mit", "ohne", "durch", "wegen", "für", "von", "in", "an", "bei", "aus", "ab", "auf"});
+        wrongFillerWordsList.add(new String[]{"nehmen", "reißen", "holen", "nehme", "reiße", "hole","genommen", "gerissen", "geholt"});
+        wrongFillerWordsList.add(new String[]{"wollen", "möchten", "sollen", "dürfen", "können", "müssen", "müssten", "sollten","dürften", "könnten","wollten","müßten","wöllten"});
+        wrongFillerWordsList.add(new String[]{"gehen", "geht", "gehe", "ging", "gingen", "gegangen"});
+        wrongFillerWordsList.add(new String[]{"essen", "isst", "esse", "aß", "aßen", "gegessen"});
+        wrongFillerWordsList.add(new String[]{"haben", "hat", "habe", "hatte", "hatten", "gehabt"});
+        wrongFillerWordsList.add(new String[]{"sein", "ist", "war", "warst", "waren", "gewesen"});
+        wrongFillerWordsList.add(new String[]{"machen", "macht", "machte", "machten", "gemacht"});
+        wrongFillerWordsList.add(new String[]{"kommen", "kommt", "kam", "kamen", "gekommen"});
+        wrongFillerWordsList.add(new String[]{"sehen", "sieht", "sah", "sahen", "gesehen"});
+
+        for (String[] wrongFillerWord : wrongFillerWordsList)
+        {
+            for (int i = 0; i < wrongFillerWord.length; i++)
+            {
+                //first letter to upper case
+                wrongFillerWord[i] = (wrongFillerWord[i].charAt(0) - 32) + wrongFillerWord[i].substring(1);
+            }
+        }
+
+        generateHashMapFromListOfStringArrays(wrongFillerWords, wrongFillerWordsList);
+    }
+
+    private void initDerDieDasMap()
+    {
+        derDieDasMap.put("der", new String[]{"die", "das"});
+        derDieDasMap.put("Der", new String[]{"Die", "Das"});
+        derDieDasMap.put("die", new String[]{"der", "das"});
+        derDieDasMap.put("Die", new String[]{"Der", "Das"});
+        derDieDasMap.put("das", new String[]{"die", "der"});
+        derDieDasMap.put("Das", new String[]{"Die", "Der"});
+    }
+
+    private void initDasDaßDassMap()
+    {
+        dasDaßDassMap.put("das", new String[]{"daß", "dass"});
+        dasDaßDassMap.put("Das", new String[]{"Daß", "Dass"});
+        dasDaßDassMap.put("daß", new String[]{"das", "dass"});
+        dasDaßDassMap.put("Daß", new String[]{"Das", "Dass"});
+        dasDaßDassMap.put("dass", new String[]{"das", "daß"});
+        dasDaßDassMap.put("Dass", new String[]{"Das", "Daß"});
     }
 
     private void generateHashMapFromListOfStringArrays(final HashMap<String, String[]> toFill, final ArrayList<String[]> listOfStringArrays)
@@ -215,6 +262,7 @@ public class SpellingErrorGeneratorGerman
         mistypeLetters.put('Ü', new char[]{'Ö', 'P', 'Ä', '*', '`', '?'});
         mistypeLetters.put('ß', new char[]{'ü', 'p', '´', '?'});
     }
+
 
 
 }

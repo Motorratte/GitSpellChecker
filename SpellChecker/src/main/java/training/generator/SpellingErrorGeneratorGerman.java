@@ -393,7 +393,31 @@ public class SpellingErrorGeneratorGerman
 
     private void processWordShifts(final StringBuilder errorTextToFill)
     {
-        
+        StringBuilder penultimateWord = new StringBuilder();
+        StringBuilder previousWord = new StringBuilder();
+        StringBuilder currentWord = new StringBuilder();
+        StringBuilder betweenWordsPenultiPrevious = new StringBuilder();
+        StringBuilder betweenWordsPreviousCurrent = new StringBuilder();
+        StringBuilder stuffAfterCurrent = new StringBuilder();
+
+        final float CHANCE_FOR_WORD_SWITCH_RANGE2 = 0.25f;
+        //current becomes previous if no letter appears, no letters are the stuff between after. if new word penultimate becomes previous and previous becomes current and current becomes new letters
+
+        for (int i = 0; i < errorTextToFill.length(); ++i)
+        {
+            final char currentChar = errorTextToFill.charAt(i);
+            if(Character.isLetter(currentChar))
+            {
+                currentWord.append(currentChar);
+            }
+            else
+            {
+                if(random.nextFloat() <= wordShiftFailureChance)
+                {
+                    if(penultimateWord.length() > 1)
+                }
+            }
+        }
     }
 
 }

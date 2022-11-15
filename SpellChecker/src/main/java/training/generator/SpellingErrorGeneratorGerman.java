@@ -15,16 +15,15 @@ public class SpellingErrorGeneratorGerman
 
     private final HashMap<String, String[]> dasDaßDassMap = new HashMap<>();
 
+    private final HashMap<String, String[]> formOfAddressMap = new HashMap<>();
+
     private final List<String> wrongWordBeginnings = new ArrayList<>();
     private final List<String> wrongWordEndings = new ArrayList<>();
     private final HashMap<String, String[]> wrongFillerWords = new HashMap<>(); // nach => [zu, in];
     private String originalText = null;
-    private String errorText = null;
+    private StringBuilder errorTextToFill = new StringBuilder();
 
-    private final int DELETION = 2;
-    private final int INSERTION = 1;
-    private final int SUBSTITUTION = 0;
-    private final ArrayList<Integer> editOperationAtIndex = new ArrayList<>();
+    private final ArrayList<EditOperation> editOperationAtIndex = new ArrayList<>();
 
     private Random random = new Random();
     private final float ERROR_CHANCES_VARIATION_FACTOR_MIN = 0.0f;
@@ -70,9 +69,6 @@ public class SpellingErrorGeneratorGerman
     private final float MISTYPE_FAILURE_CHANCE_MIN = 0.0f;
     private final float MISTYPE_FAILURE_CHANCE_MAX = 1.0f;
     private float mistypeFailureChance;
-    private final float WORD_TRANSITION_FAILURE_CHANCE_MIN = 0.0f;
-    private final float WORD_TRANSITION_FAILURE_CHANCE_MAX = 0.2f;
-    private float wordTransitionFailureChance;
     private float WRONG_WORD_BEGINNING_CHANCE_MIN = 0.0f;
     private float WRONG_WORD_BEGINNING_CHANCE_MAX = 0.2f;
     private float wrongWordBeginningChance;
@@ -82,6 +78,9 @@ public class SpellingErrorGeneratorGerman
     private final float WORD_BLENDING_CHANCE_MIN = 0.0f;
     private final float WORD_BLENDING_CHANCE_MAX = 0.2f;
     private float wordBlendingChance;
+    private final float WORD_SHIFT_FAILURE_CHANCE_MIN = 0.0f;
+    private final float WORD_SHIFT_FAILURE_CHANCE_MAX = 0.2f;
+    private float wordShiftFailureChance;
     private final float FORM_OF_ADDRESS_FAILURE_CHANCE_MIN = 0.0f;
     private final float FORM_OF_ADDRESS_FAILURE_CHANCE_MAX = 0.2f;
     private float formOfAddressFailureChance;
@@ -105,6 +104,7 @@ public class SpellingErrorGeneratorGerman
         initDerDieDasMap();
         initWrongWordBeginnings();
         initWrongWordEndings();
+        initFormOfAddressMap();
     }
 
     private float getRandomValueBetween(float min, float max)
@@ -128,7 +128,7 @@ public class SpellingErrorGeneratorGerman
         doubleLetterFailureChance = getRandomValueBetween(DOUBLE_LETTER_FAILURE_CHANCE_MIN, DOUBLE_LETTER_FAILURE_CHANCE_MAX) * errorChancesVariationFactor;
         similarLetterFailureChance = getRandomValueBetween(SIMILAR_LETTER_FAILURE_CHANCE_MIN, SIMILAR_LETTER_FAILURE_CHANCE_MAX) * errorChancesVariationFactor;
         mistypeFailureChance = getRandomValueBetween(MISTYPE_FAILURE_CHANCE_MIN, MISTYPE_FAILURE_CHANCE_MAX) * errorChancesVariationFactor;
-        wordTransitionFailureChance = getRandomValueBetween(WORD_TRANSITION_FAILURE_CHANCE_MIN, WORD_TRANSITION_FAILURE_CHANCE_MAX) * errorChancesVariationFactor;
+        wordShiftFailureChance = getRandomValueBetween(WORD_SHIFT_FAILURE_CHANCE_MIN, WORD_SHIFT_FAILURE_CHANCE_MAX) * errorChancesVariationFactor;
         wordBlendingChance = getRandomValueBetween(WORD_BLENDING_CHANCE_MIN, WORD_BLENDING_CHANCE_MAX) * errorChancesVariationFactor;
         formOfAddressFailureChance = getRandomValueBetween(FORM_OF_ADDRESS_FAILURE_CHANCE_MIN, FORM_OF_ADDRESS_FAILURE_CHANCE_MAX) * errorChancesVariationFactor;
         dasDaßDassFailureChance = getRandomValueBetween(DAS_DAß_DASS_FAILURE_CHANCE_MIN, DAS_DAß_DASS_FAILURE_CHANCE_MAX) * errorChancesVariationFactor;
@@ -171,10 +171,12 @@ public class SpellingErrorGeneratorGerman
         wrongFillerWordsList.add(new String[]{"machen", "macht", "machte", "machten", "gemacht"});
         wrongFillerWordsList.add(new String[]{"kommen", "kommt", "kam", "kamen", "gekommen"});
         wrongFillerWordsList.add(new String[]{"sehen", "sieht", "sah", "sahen", "gesehen"});
+        wrongFillerWordsList.add(new String[]{"sagen", "sagt", "sagte", "sagten", "gesagt"});
+        wrongFillerWordsList.add(new String[]{"der", "des", "den", "dem", "die", "das", "dies", "dieser", "dieses", "diesen", "diesem"});
 
         for (String[] wrongFillerWord : wrongFillerWordsList)
         {
-            for (int i = 0; i < wrongFillerWord.length; i++)
+            for (int i = 0; i < wrongFillerWord.length; ++i)
             {
                 //first letter to upper case
                 wrongFillerWord[i] = (wrongFillerWord[i].charAt(0) - 32) + wrongFillerWord[i].substring(1);
@@ -184,6 +186,16 @@ public class SpellingErrorGeneratorGerman
         generateHashMapFromListOfStringArrays(wrongFillerWords, wrongFillerWordsList);
     }
 
+    private void initFormOfAddressMap()
+    {
+        final ArrayList<String[]> formOfAddressList = new ArrayList<>();
+        formOfAddressList.add(new String[]{"du", "sie"});
+        formOfAddressList.add(new String[]{"ihr", "ihm", "dir", "ihnen","dein"});
+        formOfAddressList.add(new String[]{"Du", "Sie"});
+        formOfAddressList.add(new String[]{"Ihr", "Ihm", "Dir", "Ihnen","Dein"});
+
+        generateHashMapFromListOfStringArrays(formOfAddressMap, formOfAddressList);
+    }
     private void initDerDieDasMap()
     {
         derDieDasMap.put("der", new String[]{"die", "das"});
@@ -241,7 +253,7 @@ public class SpellingErrorGeneratorGerman
         //each element becomes key and the rest of the elements become the value
         for (final String[] stringArray : listOfStringArrays)
         {
-            for (int i = 1; i < stringArray.length; i++)
+            for (int i = 1; i < stringArray.length; ++i)
             {
                 toFill.put(stringArray[i], stringArray);
             }
@@ -318,15 +330,70 @@ public class SpellingErrorGeneratorGerman
 
     public String generateErrorText()
     {
-        return null;
-    }
+        errorTextToFill.setLength(0);
+        processWordReplacements(errorTextToFill);
 
-    //process word replacements
-    private void processWordReplacements()
+
+        return errorTextToFill.toString();
+    }
+    private boolean appendWordReplacement(final StringBuilder errorTextToFill,final StringBuilder currentWord, final HashMap<String, String[]> wordReplacementMap)
     {
-        //itera through error text
-
+        final String[] possibleReplacements = wordReplacementMap.get(currentWord.toString());
+        if(possibleReplacements != null)
+        {
+            final String replacement = possibleReplacements[random.nextInt(possibleReplacements.length)];
+            final int replacementLimit = Math.min(replacement.length(), currentWord.length());
+            for(int j = 0; j < replacementLimit; ++j)
+                editOperationAtIndex.add(EditOperation.REPLACE);
+            if(replacementLimit < currentWord.length())
+                for(int j = replacementLimit; j < currentWord.length(); ++j)
+                    editOperationAtIndex.add(EditOperation.DELETE);
+            else if(replacementLimit < replacement.length())
+                for(int j = replacementLimit; j < replacement.length(); ++j)
+                    editOperationAtIndex.add(EditOperation.INSERT);
+            errorTextToFill.append(replacement);
+            return true;
+        }
+        return false;
+    }
+    private void processWordReplacements(final StringBuilder errorTextToFill)
+    {
+        //types of wordreplacements are: das dass daß, der die das, wrongFillerWords
+        final StringBuilder currentWord = new StringBuilder();
+        for (int i = 0; i < errorTextToFill.length(); ++i)
+        {
+            final char currentChar = errorTextToFill.charAt(i);
+            if (Character.isLetter(currentChar))
+            {
+                currentWord.append(currentChar);
+                if(random.nextFloat() <= derDieDasFailureChance && appendWordReplacement(errorTextToFill, currentWord, derDieDasMap))
+                    currentWord.setLength(0);
+                else if(random.nextFloat() <= formOfAddressFailureChance && appendWordReplacement(errorTextToFill, currentWord, formOfAddressMap))
+                    currentWord.setLength(0);
+                else if(random.nextFloat() <= dasDaßDassFailureChance && appendWordReplacement(errorTextToFill, currentWord, dasDaßDassMap))
+                    currentWord.setLength(0);
+                else if(random.nextFloat() <= wrongFillerWordFailureChance && appendWordReplacement(errorTextToFill, currentWord, wrongFillerWords))
+                    currentWord.setLength(0);
+            }
+            else
+            {
+                replaceWithSelf(errorTextToFill, currentWord);
+                currentWord.setLength(0);
+            }
+        }
+        replaceWithSelf(errorTextToFill, currentWord);
     }
 
+    private void replaceWithSelf(StringBuilder errorTextToFill, StringBuilder currentWord)
+    {
+        errorTextToFill.append(currentWord);
+        for(int j = 0; j < currentWord.length(); ++j)
+            editOperationAtIndex.add(EditOperation.REPLACE); //replace with itself => no change
+    }
+
+    private void processWordShifts(final StringBuilder errorTextToFill)
+    {
+        
+    }
 
 }

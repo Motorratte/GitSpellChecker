@@ -22,6 +22,7 @@ public class SpellingErrorGeneratorGerman
     private final HashMap<String, String[]> wrongFillerWords = new HashMap<>(); // nach => [zu, in];
     private String originalText = null;
     private StringBuilder errorTextToFill = new StringBuilder();
+    private StringBuilder errorTextToFillSwap = new StringBuilder();
 
     private final ArrayList<EditOperation> editOperationAtIndex = new ArrayList<>();
 
@@ -124,7 +125,7 @@ public class SpellingErrorGeneratorGerman
         upperLowerCaseFailureChance = getRandomValueBetween(UPPER_LOWER_CASE_FAILURE_CHANCE_MIN, UPPER_LOWER_CASE_FAILURE_CHANCE_MAX) * errorChancesVariationFactor;
         upperLowerCaseFailureChanceForFirstLetter = getRandomValueBetween(UPPER_LOWER_CASE_FAILURE_CHANCE_FOR_FIRST_LETTER_MIN, UPPER_LOWER_CASE_FAILURE_CHANCE_FOR_FIRST_LETTER_MAX) * errorChancesVariationFactor;
         emptySpaceInsertionChance = getRandomValueBetween(EMPTY_SPACE_INSERTION_CHANCE_MIN, EMPTY_SPACE_INSERTION_CHANCE_MAX) * errorChancesVariationFactor;
-        emptySpaceDeletionChance = getRandomValueBetween(EMPTY_SPACE_DELETION_CHANCE_MIN, EMPTY_SPACE_DELETION_CHANCE_MAX)* errorChancesVariationFactor;
+        emptySpaceDeletionChance = getRandomValueBetween(EMPTY_SPACE_DELETION_CHANCE_MIN, EMPTY_SPACE_DELETION_CHANCE_MAX) * errorChancesVariationFactor;
         doubleLetterFailureChance = getRandomValueBetween(DOUBLE_LETTER_FAILURE_CHANCE_MIN, DOUBLE_LETTER_FAILURE_CHANCE_MAX) * errorChancesVariationFactor;
         similarLetterFailureChance = getRandomValueBetween(SIMILAR_LETTER_FAILURE_CHANCE_MIN, SIMILAR_LETTER_FAILURE_CHANCE_MAX) * errorChancesVariationFactor;
         mistypeFailureChance = getRandomValueBetween(MISTYPE_FAILURE_CHANCE_MIN, MISTYPE_FAILURE_CHANCE_MAX) * errorChancesVariationFactor;
@@ -162,8 +163,8 @@ public class SpellingErrorGeneratorGerman
     {
         final ArrayList<String[]> wrongFillerWordsList = new ArrayList<>();
         wrongFillerWordsList.add(new String[]{"zu", "um", "nach", "vor", "über", "unter", "gegen", "mit", "ohne", "durch", "wegen", "für", "von", "in", "an", "bei", "aus", "ab", "auf"});
-        wrongFillerWordsList.add(new String[]{"nehmen", "reißen", "holen", "nehme", "reiße", "hole","genommen", "gerissen", "geholt"});
-        wrongFillerWordsList.add(new String[]{"wollen", "möchten", "sollen", "dürfen", "können", "müssen", "müssten", "sollten","dürften", "könnten","wollten","müßten","wöllten"});
+        wrongFillerWordsList.add(new String[]{"nehmen", "reißen", "holen", "nehme", "reiße", "hole", "genommen", "gerissen", "geholt"});
+        wrongFillerWordsList.add(new String[]{"wollen", "möchten", "sollen", "dürfen", "können", "müssen", "müssten", "sollten", "dürften", "könnten", "wollten", "müßten", "wöllten"});
         wrongFillerWordsList.add(new String[]{"gehen", "geht", "gehe", "ging", "gingen", "gegangen"});
         wrongFillerWordsList.add(new String[]{"essen", "isst", "esse", "aß", "aßen", "gegessen"});
         wrongFillerWordsList.add(new String[]{"haben", "hat", "habe", "hatte", "hatten", "gehabt"});
@@ -190,12 +191,13 @@ public class SpellingErrorGeneratorGerman
     {
         final ArrayList<String[]> formOfAddressList = new ArrayList<>();
         formOfAddressList.add(new String[]{"du", "sie"});
-        formOfAddressList.add(new String[]{"ihr", "ihm", "dir", "ihnen","dein"});
+        formOfAddressList.add(new String[]{"ihr", "ihm", "dir", "ihnen", "dein"});
         formOfAddressList.add(new String[]{"Du", "Sie"});
-        formOfAddressList.add(new String[]{"Ihr", "Ihm", "Dir", "Ihnen","Dein"});
+        formOfAddressList.add(new String[]{"Ihr", "Ihm", "Dir", "Ihnen", "Dein"});
 
         generateHashMapFromListOfStringArrays(formOfAddressMap, formOfAddressList);
     }
+
     private void initDerDieDasMap()
     {
         derDieDasMap.put("der", new String[]{"die", "das"});
@@ -224,6 +226,7 @@ public class SpellingErrorGeneratorGerman
             list.set(i, (list.get(i).charAt(0) - 32) + list.get(i).substring(1));
         }
     }
+
     private void initWrongWordBeginnings()
     {
         wrongWordBeginnings.add("ge");
@@ -320,7 +323,7 @@ public class SpellingErrorGeneratorGerman
         mistypeLetters.put('-', new char[]{'.', 'ä', 'ö', '#'});
         mistypeLetters.put('ä', new char[]{'ö', 'ü', '#', '-', '+'});
         mistypeLetters.put('ö', new char[]{'ä', 'ü', 'p', 'l', '.', '-'});
-        mistypeLetters.put('ü', new char[]{'ö', 'p', 'ä', '+','´','ß'});
+        mistypeLetters.put('ü', new char[]{'ö', 'p', 'ä', '+', '´', 'ß'});
         mistypeLetters.put('Ä', new char[]{'Ö', 'Ü', '\'', '_', '*'});
         mistypeLetters.put('Ö', new char[]{'Ä', 'Ü', 'P', 'L', ':', '_'});
         mistypeLetters.put('Ü', new char[]{'Ö', 'P', 'Ä', '*', '`', '?'});
@@ -332,17 +335,28 @@ public class SpellingErrorGeneratorGerman
     {
         errorTextToFill.setLength(0);
         processWordReplacements(errorTextToFill);
-
+        saveErrorTextToFillInSwap();
+        processWordShifts(errorTextToFillSwap, errorTextToFill);
+        saveErrorTextToFillInSwap();
 
         return errorTextToFill.toString();
     }
-    private boolean appendWordReplacement(final StringBuilder errorTextToFill,final StringBuilder currentWord, final HashMap<String, String[]> wordReplacementMap)
+
+    private void saveErrorTextToFillInSwap()
+    {
+        final StringBuilder memorize = errorTextToFill;
+        errorTextToFill = errorTextToFillSwap;
+        errorTextToFillSwap = memorize;
+        errorTextToFill.setLength(0);
+    }
+
+    private boolean appendWordReplacement(final StringBuilder errorTextToFill, final StringBuilder currentWord, final HashMap<String, String[]> wordReplacementMap)
     {
         final String[] possibleReplacements = wordReplacementMap.get(currentWord.toString());
-        if(possibleReplacements != null)
+        if (possibleReplacements != null)
         {
             final String replacement = possibleReplacements[random.nextInt(possibleReplacements.length)];
-            final int replacementLimit = Math.min(replacement.length(), currentWord.length());
+            /*final int replacementLimit = Math.min(replacement.length(), currentWord.length());
             for(int j = 0; j < replacementLimit; ++j)
                 editOperationAtIndex.add(EditOperation.REPLACE);
             if(replacementLimit < currentWord.length())
@@ -350,12 +364,13 @@ public class SpellingErrorGeneratorGerman
                     editOperationAtIndex.add(EditOperation.DELETE);
             else if(replacementLimit < replacement.length())
                 for(int j = replacementLimit; j < replacement.length(); ++j)
-                    editOperationAtIndex.add(EditOperation.INSERT);
+                    editOperationAtIndex.add(EditOperation.INSERT);*/
             errorTextToFill.append(replacement);
             return true;
         }
         return false;
     }
+
     private void processWordReplacements(final StringBuilder errorTextToFill)
     {
         //types of wordreplacements are: das dass daß, der die das, wrongFillerWords
@@ -366,13 +381,13 @@ public class SpellingErrorGeneratorGerman
             if (Character.isLetter(currentChar))
             {
                 currentWord.append(currentChar);
-                if(random.nextFloat() <= derDieDasFailureChance && appendWordReplacement(errorTextToFill, currentWord, derDieDasMap))
+                if (random.nextFloat() <= derDieDasFailureChance && appendWordReplacement(errorTextToFill, currentWord, derDieDasMap))
                     currentWord.setLength(0);
-                else if(random.nextFloat() <= formOfAddressFailureChance && appendWordReplacement(errorTextToFill, currentWord, formOfAddressMap))
+                else if (random.nextFloat() <= formOfAddressFailureChance && appendWordReplacement(errorTextToFill, currentWord, formOfAddressMap))
                     currentWord.setLength(0);
-                else if(random.nextFloat() <= dasDaßDassFailureChance && appendWordReplacement(errorTextToFill, currentWord, dasDaßDassMap))
+                else if (random.nextFloat() <= dasDaßDassFailureChance && appendWordReplacement(errorTextToFill, currentWord, dasDaßDassMap))
                     currentWord.setLength(0);
-                else if(random.nextFloat() <= wrongFillerWordFailureChance && appendWordReplacement(errorTextToFill, currentWord, wrongFillerWords))
+                else if (random.nextFloat() <= wrongFillerWordFailureChance && appendWordReplacement(errorTextToFill, currentWord, wrongFillerWords))
                     currentWord.setLength(0);
             }
             else
@@ -387,11 +402,11 @@ public class SpellingErrorGeneratorGerman
     private void replaceWithSelf(StringBuilder errorTextToFill, StringBuilder currentWord)
     {
         errorTextToFill.append(currentWord);
-        for(int j = 0; j < currentWord.length(); ++j)
-            editOperationAtIndex.add(EditOperation.REPLACE); //replace with itself => no change
+        /*for(int j = 0; j < currentWord.length(); ++j)
+            editOperationAtIndex.add(EditOperation.REPLACE); //replace with itself => no change*/
     }
 
-    private void processWordShifts(final StringBuilder errorTextToFill)
+    private void processWordShifts(final StringBuilder errorText, final StringBuilder errorTextToFill)
     {
         StringBuilder penultimateWord = new StringBuilder();
         StringBuilder previousWord = new StringBuilder();
@@ -403,18 +418,39 @@ public class SpellingErrorGeneratorGerman
         final float CHANCE_FOR_WORD_SWITCH_RANGE2 = 0.25f;
         //current becomes previous if no letter appears, no letters are the stuff between after. if new word penultimate becomes previous and previous becomes current and current becomes new letters
 
-        for (int i = 0; i < errorTextToFill.length(); ++i)
+        for (int i = 0; i < errorText.length(); ++i)
         {
             final char currentChar = errorTextToFill.charAt(i);
-            if(Character.isLetter(currentChar))
+            if (Character.isLetter(currentChar))
             {
                 currentWord.append(currentChar);
             }
             else
             {
-                if(random.nextFloat() <= wordShiftFailureChance)
+                if (random.nextFloat() <= wordShiftFailureChance)
                 {
-                    if(penultimateWord.length() > 1)
+                    if (penultimateWord.length() > 1)
+                    {
+                        if (random.nextFloat() <= CHANCE_FOR_WORD_SWITCH_RANGE2 && previousWord.length() > 1 && currentWord.length() > 1)
+                        {
+                            //switch punultimate and current
+                            errorTextToFill.append(currentWord);
+                            errorTextToFill.append(betweenWordsPenultiPrevious);
+                            errorTextToFill.append(previousWord);
+                            errorTextToFill.append(betweenWordsPreviousCurrent);
+                            errorTextToFill.append(penultimateWord);
+                            errorTextToFill.append(stuffAfterCurrent);
+
+                        }
+                        else
+                        {
+
+                        }
+                    }
+                    else
+                    {
+
+                    }
                 }
             }
         }

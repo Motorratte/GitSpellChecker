@@ -83,16 +83,16 @@ public class SpellingErrorGeneratorGerman
     private final float WORD_SHIFT_FAILURE_CHANCE_MAX = 0.2f;
     private float wordShiftFailureChance;
     private final float FORM_OF_ADDRESS_FAILURE_CHANCE_MIN = 0.0f;
-    private final float FORM_OF_ADDRESS_FAILURE_CHANCE_MAX = 0.2f;
+    private final float FORM_OF_ADDRESS_FAILURE_CHANCE_MAX = 0.4f;
     private float formOfAddressFailureChance;
     private final float DAS_DAß_DASS_FAILURE_CHANCE_MIN = 0.0f;
-    private final float DAS_DAß_DASS_FAILURE_CHANCE_MAX = 0.2f;
+    private final float DAS_DAß_DASS_FAILURE_CHANCE_MAX = 0.6f;
     private float dasDaßDassFailureChance;
     private final float DER_DIE_DAS_FAILURE_CHANCE_MIN = 0.0f;
-    private final float DER_DIE_DAS_FAILURE_CHANCE_MAX = 0.2f;
+    private final float DER_DIE_DAS_FAILURE_CHANCE_MAX = 0.6f;
     private float derDieDasFailureChance;
     private final float WRONG_FILLER_WORD_FAILURE_CHANCE_MIN = 0.0f;
-    private final float WRONG_FILLER_WORD_FAILURE_CHANCE_MAX = 0.2f;
+    private final float WRONG_FILLER_WORD_FAILURE_CHANCE_MAX = 0.4f;
     private float wrongFillerWordFailureChance;
 
     public SpellingErrorGeneratorGerman()
@@ -337,7 +337,7 @@ public class SpellingErrorGeneratorGerman
         processWordReplacements(errorTextToFill);
         saveErrorTextToFillInSwap();
         processWordShifts(errorTextToFillSwap, errorTextToFill);
-        saveErrorTextToFillInSwap();
+        //saveErrorTextToFillInSwap();
 
         return errorTextToFill.toString();
     }
@@ -375,12 +375,12 @@ public class SpellingErrorGeneratorGerman
     {
         //types of wordreplacements are: das dass daß, der die das, wrongFillerWords
         final StringBuilder currentWord = new StringBuilder();
-        for (int i = 0; i < errorTextToFill.length(); ++i)
+        for (int i = 0; i < originalText.length(); ++i)
         {
-            final char currentChar = errorTextToFill.charAt(i);
+            final char currentChar = originalText.charAt(i);
+            currentWord.append(currentChar);
             if (Character.isLetter(currentChar))
             {
-                currentWord.append(currentChar);
                 if (random.nextFloat() <= derDieDasFailureChance && appendWordReplacement(errorTextToFill, currentWord, derDieDasMap))
                     currentWord.setLength(0);
                 else if (random.nextFloat() <= formOfAddressFailureChance && appendWordReplacement(errorTextToFill, currentWord, formOfAddressMap))
@@ -414,14 +414,12 @@ public class SpellingErrorGeneratorGerman
         StringBuilder betweenWordsPenultiPrevious = new StringBuilder();
         StringBuilder betweenWordsPreviousCurrent = new StringBuilder();
 
-
         final float CHANCE_FOR_WORD_SWITCH_RANGE2 = 0.25f;
-        //current becomes previous if no letter appears, no letters are the stuff between after. if new word penultimate becomes previous and previous becomes current and current becomes new letters
 
         boolean nextIsFirstNoLatterSinceLastWord = true;
         for (int i = 0; i < errorText.length(); ++i)
         {
-            final char currentChar = errorTextToFill.charAt(i);
+            final char currentChar = errorText.charAt(i);
             if (Character.isLetter(currentChar))
             {
                 currentWord.append(currentChar);
@@ -484,4 +482,21 @@ public class SpellingErrorGeneratorGerman
         errorTextToFill.append(betweenWordsPreviousCurrent);
         errorTextToFill.append(currentWord);
     }
+
+    private void processWordBlending(final StringBuilder errorText, final StringBuilder errorTextToFill)
+    {
+        final StringBuilder currentWord = new StringBuilder();
+        for (int i = 0; i < errorText.length(); ++i)
+        {
+
+        }
+        errorTextToFill.append(currentWord);
+    }
+
+    public void setOriginalText(String originalText)
+    {
+        this.originalText = originalText;
+    }
+
+
 }

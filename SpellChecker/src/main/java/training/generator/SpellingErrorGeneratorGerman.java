@@ -413,47 +413,75 @@ public class SpellingErrorGeneratorGerman
         StringBuilder currentWord = new StringBuilder();
         StringBuilder betweenWordsPenultiPrevious = new StringBuilder();
         StringBuilder betweenWordsPreviousCurrent = new StringBuilder();
-        StringBuilder stuffAfterCurrent = new StringBuilder();
+
 
         final float CHANCE_FOR_WORD_SWITCH_RANGE2 = 0.25f;
         //current becomes previous if no letter appears, no letters are the stuff between after. if new word penultimate becomes previous and previous becomes current and current becomes new letters
 
+        boolean nextIsFirstNoLatterSinceLastWord = true;
         for (int i = 0; i < errorText.length(); ++i)
         {
             final char currentChar = errorTextToFill.charAt(i);
             if (Character.isLetter(currentChar))
             {
                 currentWord.append(currentChar);
+                nextIsFirstNoLatterSinceLastWord = true;
             }
             else
             {
-                if (random.nextFloat() <= wordShiftFailureChance)
+                if (random.nextFloat() <= wordShiftFailureChance && currentWord.length() > 1 && previousWord.length() > 1)
                 {
-                    if (penultimateWord.length() > 1)
+                    if (random.nextFloat() <= CHANCE_FOR_WORD_SWITCH_RANGE2 && penultimateWord.length() > 1)
                     {
-                        if (random.nextFloat() <= CHANCE_FOR_WORD_SWITCH_RANGE2 && previousWord.length() > 1 && currentWord.length() > 1)
-                        {
-                            //switch punultimate and current
-                            errorTextToFill.append(currentWord);
-                            errorTextToFill.append(betweenWordsPenultiPrevious);
-                            errorTextToFill.append(previousWord);
-                            errorTextToFill.append(betweenWordsPreviousCurrent);
-                            errorTextToFill.append(penultimateWord);
-                            errorTextToFill.append(stuffAfterCurrent);
+                        //switch punultimate and current
+                        errorTextToFill.append(currentWord);
+                        errorTextToFill.append(betweenWordsPenultiPrevious);
+                        errorTextToFill.append(previousWord);
+                        errorTextToFill.append(betweenWordsPreviousCurrent);
+                        errorTextToFill.append(penultimateWord);
 
-                        }
-                        else
-                        {
-
-                        }
                     }
                     else
                     {
+                        //switch previous and current
+                        errorTextToFill.append(penultimateWord);
+                        errorTextToFill.append(betweenWordsPenultiPrevious);
+                        errorTextToFill.append(currentWord);
+                        errorTextToFill.append(betweenWordsPreviousCurrent);
+                        errorTextToFill.append(previousWord);
+                    }
+                    penultimateWord.setLength(0);
+                    betweenWordsPenultiPrevious.setLength(0);
+                    previousWord.setLength(0);
+                    betweenWordsPreviousCurrent.setLength(0);
+                    currentWord.setLength(0);
+                }
+                else
+                {
 
+                    if (nextIsFirstNoLatterSinceLastWord)
+                    {
+                        errorTextToFill.append(penultimateWord);
+                        final StringBuilder memorize = penultimateWord;
+                        penultimateWord = previousWord;
+                        previousWord = currentWord;
+                        currentWord = memorize;
+                        currentWord.setLength(0);
+                        errorTextToFill.append(betweenWordsPenultiPrevious);
+                        final StringBuilder memorize2 = betweenWordsPenultiPrevious;
+                        betweenWordsPenultiPrevious = betweenWordsPreviousCurrent;
+                        betweenWordsPreviousCurrent = memorize2;
+                        betweenWordsPreviousCurrent.setLength(0);
                     }
                 }
+                betweenWordsPreviousCurrent.append(currentChar);
+                nextIsFirstNoLatterSinceLastWord = false;
             }
         }
+        errorTextToFill.append(penultimateWord);
+        errorTextToFill.append(betweenWordsPenultiPrevious);
+        errorTextToFill.append(previousWord);
+        errorTextToFill.append(betweenWordsPreviousCurrent);
+        errorTextToFill.append(currentWord);
     }
-
 }

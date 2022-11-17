@@ -26,7 +26,7 @@ public class SpellingErrorGeneratorGerman
 
     private final ArrayList<EditOperation> editOperationAtIndex = new ArrayList<>();
 
-    private Random random = new Random();
+    private final Random random = new Random();
     private final float ERROR_CHANCES_VARIATION_FACTOR_MIN = 0.0f;
     private final float ERROR_CHANCES_VARIATION_FACTOR_MAX = 1.0f;
     private float errorChancesVariationFactor;
@@ -77,16 +77,18 @@ public class SpellingErrorGeneratorGerman
     private float WRONG_WORD_ENDING_CHANCE_MAX = 0.2f;
     private float wrongWordEndingChance;
     private final float WORD_BLENDING_CHANCE_MIN = 0.0f;
-    private final float WORD_BLENDING_CHANCE_MAX = 0.2f;
+    private final float WORD_BLENDING_CHANCE_MAX = 0.1f;
+    private final int MAX_WORD_BLENDING_RANGE = 6;
     private float wordBlendingChance;
     private final float WORD_SHIFT_FAILURE_CHANCE_MIN = 0.0f;
     private final float WORD_SHIFT_FAILURE_CHANCE_MAX = 0.2f;
+    private final float CHANCE_FOR_WORD_SWITCH_RANGE2 = 0.25f;
     private float wordShiftFailureChance;
     private final float FORM_OF_ADDRESS_FAILURE_CHANCE_MIN = 0.0f;
     private final float FORM_OF_ADDRESS_FAILURE_CHANCE_MAX = 0.4f;
     private float formOfAddressFailureChance;
     private final float DAS_DAß_DASS_FAILURE_CHANCE_MIN = 0.0f;
-    private final float DAS_DAß_DASS_FAILURE_CHANCE_MAX = 0.6f;
+    private final float DAS_DAß_DASS_FAILURE_CHANCE_MAX = 0.4f;
     private float dasDaßDassFailureChance;
     private final float DER_DIE_DAS_FAILURE_CHANCE_MIN = 0.0f;
     private final float DER_DIE_DAS_FAILURE_CHANCE_MAX = 0.6f;
@@ -145,7 +147,7 @@ public class SpellingErrorGeneratorGerman
         final ArrayList<String[]> similarLetterList = new ArrayList<>();
         similarLetterList.add(new String[]{"a", "e", "ä"});
         similarLetterList.add(new String[]{"o", "u", "ö", "ü"});
-        similarLetterList.add(new String[]{"p", "b", "d", "t", "g"});
+        similarLetterList.add(new String[]{"p", "b", "d", "t", "g", "s"});
         similarLetterList.add(new String[]{"P", "B"});
         similarLetterList.add(new String[]{"c", "k", "q"});
         similarLetterList.add(new String[]{"C", "K", "Q"});
@@ -155,6 +157,7 @@ public class SpellingErrorGeneratorGerman
         similarLetterList.add(new String[]{"i", "j", "y", "1", "l"});
         similarLetterList.add(new String[]{"m", "n"});
         similarLetterList.add(new String[]{"f", "v", "w"});
+        similarLetterList.add(new String[]{"dt", "td"});
 
         generateHashMapFromListOfStringArrays(similarLetters, similarLetterList);
     }
@@ -337,7 +340,12 @@ public class SpellingErrorGeneratorGerman
         processWordReplacements(errorTextToFill);
         saveErrorTextToFillInSwap();
         processWordShifts(errorTextToFillSwap, errorTextToFill);
-        //saveErrorTextToFillInSwap();
+        saveErrorTextToFillInSwap();
+        processWordBlending(errorTextToFillSwap, errorTextToFill);
+        saveErrorTextToFillInSwap();
+        processWrongWordBeginningsAndEndings(errorTextToFillSwap, errorTextToFill);
+        saveErrorTextToFillInSwap();
+        processSimilarSymbols(errorTextToFillSwap, errorTextToFill);
 
         return errorTextToFill.toString();
     }
@@ -414,8 +422,6 @@ public class SpellingErrorGeneratorGerman
         StringBuilder betweenWordsPenultiPrevious = new StringBuilder();
         StringBuilder betweenWordsPreviousCurrent = new StringBuilder();
 
-        final float CHANCE_FOR_WORD_SWITCH_RANGE2 = 0.25f;
-
         boolean nextIsFirstNoLatterSinceLastWord = true;
         for (int i = 0; i < errorText.length(); ++i)
         {
@@ -485,12 +491,145 @@ public class SpellingErrorGeneratorGerman
 
     private void processWordBlending(final StringBuilder errorText, final StringBuilder errorTextToFill)
     {
-        final StringBuilder currentWord = new StringBuilder();
         for (int i = 0; i < errorText.length(); ++i)
         {
+            errorTextToFill.append(errorText.charAt(i));
+            if(random.nextFloat() <= wordBlendingChance)
+            {
+                final int wordBlendingRang = random.nextInt(MAX_WORD_BLENDING_RANGE) + 1;
+                final int indexLimitBlending = Math.min(i + wordBlendingRang, errorText.length());
+                while(++i < indexLimitBlending)
+                {
+                    final char currentChar = errorText.charAt(i);
+                    if (currentChar == '\n' || currentChar == '\t' || currentChar == '\r')
+                        errorTextToFill.append(currentChar);
+
+                }
+            }
+        }
+    }
+
+    private void processWrongWordBeginningsAndEndings(final StringBuilder errorText, final StringBuilder errorTextToFill)
+    {
+        boolean lastCharWasntLetter = true;
+        boolean lastCharWasLetter = false;
+        //boolean sentenceStart = true;
+        for (int i = 0; i < errorText.length(); ++i)
+        {
+            final char currentChar = errorText.charAt(i);
+            if(Character.isLetter(currentChar))
+            {
+                final boolean isLowerCase = Character.isLowerCase(currentChar);
+                checkInsertWrongWordBeginning(errorTextToFill, lastCharWasntLetter, isLowerCase);
+                if(i == errorText.length() - 1)
+                    checkInsertWrongWordEnding(errorTextToFill, lastCharWasLetter);
+                lastCharWasntLetter = false;
+                lastCharWasLetter = true;
+                //sentenceStart = false;
+            }
+            else
+            {
+                checkInsertWrongWordEnding(errorTextToFill, lastCharWasLetter);
+                lastCharWasntLetter = true;
+                lastCharWasLetter = false;
+                //if(currentChar == '.' || currentChar == '!' || currentChar == '?')
+                    //sentenceStart = true;
+            }
+            errorTextToFill.append(currentChar);
 
         }
-        errorTextToFill.append(currentWord);
+    }
+
+    private void checkInsertWrongWordEnding(StringBuilder errorTextToFill, boolean lastCharWasLetter)
+    {
+        if (lastCharWasLetter && random.nextFloat() <= wrongWordEndingChance)
+        {
+            final String wrongEnding = wrongWordEndings.get(random.nextInt(wrongWordEndings.size()));
+            errorTextToFill.append(wrongEnding);
+        }
+    }
+
+    private void checkInsertWrongWordBeginning(StringBuilder errorTextToFill, boolean lastCharWasntLetter, boolean isLowerCase)
+    {
+        if(lastCharWasntLetter && isLowerCase && random.nextFloat() <= wrongWordBeginningChance)
+        {
+            final String wrongBeginning = wrongWordBeginnings.get(random.nextInt(wrongWordBeginnings.size()));
+            errorTextToFill.append(wrongBeginning);
+        }
+    }
+
+    private void processSimilarSymbols(final StringBuilder errorText, final StringBuilder errorTextToFill)
+    {
+        char currentChar = 0;
+        char previousChar = 0;
+        char penultimateChar;
+        for (int i = 0; i < errorText.length(); ++i)
+        {
+            penultimateChar = previousChar;
+            previousChar = currentChar;
+            currentChar = errorText.charAt(i);
+            if(Character.isLetter(currentChar) && random.nextFloat() <= similarLetterFailureChance)
+            {
+                final String threeSymbols = "" + penultimateChar + previousChar + currentChar;
+                final String twoSymbols = "" + previousChar + currentChar;
+                final String oneSymbol = "" + currentChar;
+                String[] similarSymbols = similarLetters.get(threeSymbols);
+                if (similarSymbols == null)
+                {
+                    similarSymbols = similarLetters.get(twoSymbols);
+                    if (similarSymbols == null)
+                    {
+                        similarSymbols = similarLetters.get(oneSymbol);
+                        if(similarSymbols != null)
+                            currentChar = 0;
+                    }
+                    else
+                    {
+                        previousChar = 0;
+                        currentChar = 0;
+                    }
+                }
+                else
+                {
+                    penultimateChar = 0;
+                    previousChar = 0;
+                    currentChar = 0;
+                }
+                if(penultimateChar != 0)
+                {
+                    errorTextToFill.append(penultimateChar);
+                    penultimateChar = 0;
+                }
+                if(similarSymbols != null)
+                {
+                    if(previousChar != 0)
+                    {
+                        errorTextToFill.append(previousChar);
+                        previousChar = 0;
+                    }
+                    errorTextToFill.append(similarSymbols[random.nextInt(similarSymbols.length)]);
+                }
+
+            }
+            if(penultimateChar != 0)
+                errorTextToFill.append(penultimateChar);
+        }
+        if(previousChar != 0)
+            errorTextToFill.append(previousChar);
+        if(currentChar != 0)
+            errorTextToFill.append(currentChar);
+    }
+
+    private void processSymbolSwapping(final StringBuilder errorText, final StringBuilder errorTextToFill)
+    {
+        for (int i = 0;i < errorText.length();++i)
+        {
+            final char currentChar = errorText.charAt(i);
+            if(random.nextFloat() <= randomSymbolTranspositionChance)
+            {
+                //ToDo
+            }
+        }
     }
 
     public void setOriginalText(String originalText)

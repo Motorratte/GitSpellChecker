@@ -68,9 +68,39 @@ Fehlergenerator Fähigkeiten (generiert aus fehlerfreien Text, fehlerbehafteten 
 Modeloptimierung:
 - Wahrscheinlich ähnliche Strategie wie bei der Zahlenaddition möglich. (Fehlerkorrekturmodelle für vorangegangene Modelle)
 
-1. Ein zeichen zusätzlich im ErrorText entspricht einer hinzufügung
-2. Ein zeichen zuwenig einer Deletion
-3. Alles andere sind Ersetzungen.
-4. Wird in der nachfolgenden Iteration einer ersetzung ersetzt, so blreibt es eine Ersetzung.
-5. Wird eine ersetzung entfernt so wird es eine Deletion
-6. Wird eine hinzufügung entfernt so wird das element der operation entfernt.
+[Hallo Du da]
+[Hallo die da]
+
+mistype
+similarletter
+doubleletterfailur
+emptyspaceDeletion
+emptySpaceInsertion
+upperLowerCaseFailureFirstLetter
+upperLowerCaseFailure
+randomSymbolTransposition
+randomCommaDeletion
+randomCommaInsertion
+randomSymbolSubstitution
+randomSymbolDeletion
+randomSymbolInsertion
+
+randomSymbolTranspositon processing
+SimilarLetter processing
+
+processing
+{
+mistype (insertion, substitution)
+doubleletterfailur
+emptyspaceDeletion
+emptySpaceInsertion
+upperLowerCaseFailureFirstLetter
+upperLowerCaseFailure
+randomCommaDeletion
+randomCommaInsertion
+randomSymbolSubstitution
+randomSymbolDeletion
+randomSymbolInsertion
+}
+
+wie mit zeilenumbrüchen umgehen? => darf nicht manipuliert werden

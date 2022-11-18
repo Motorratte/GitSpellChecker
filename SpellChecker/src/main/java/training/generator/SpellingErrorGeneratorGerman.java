@@ -27,78 +27,78 @@ public class SpellingErrorGeneratorGerman
     private final ArrayList<EditOperation> editOperationAtIndex = new ArrayList<>();
 
     private final Random random = new Random();
-    private final float ERROR_CHANCES_VARIATION_FACTOR_MIN = 1.0f;
-    private final float ERROR_CHANCES_VARIATION_FACTOR_MAX = 1.0f;
+    private final float ERROR_CHANCES_VARIATION_FACTOR_MIN = 0.0f;
+    private final float ERROR_CHANCES_VARIATION_FACTOR_MAX = 0.6f;
     private float errorChancesVariationFactor;
     private final float LETTER_CHANCE_FOR_RANDOM_SYMBOL = 0.95f;
     private final float RANDOM_SYMBOL_INSERTION_CHANCE_MIN = 0.0f;
-    private final float RANDOM_SYMBOL_INSERTION_CHANCE_MAX = 0.2f;
+    private final float RANDOM_SYMBOL_INSERTION_CHANCE_MAX = 0.04f;
     private float randomSymbolInsertionChance;
     private final float RANDOM_SYMBOL_DELETION_CHANCE_MIN = 0.0f;
-    private final float RANDOM_SYMBOL_DELETION_CHANCE_MAX = 0.2f;
+    private final float RANDOM_SYMBOL_DELETION_CHANCE_MAX = 0.04f;
     private float randomSymbolDeletionChance;
     private final float RANDOM_SYMBOL_SUBSTITUTION_CHANCE_MIN = 0.0f;
-    private final float RANDOM_SYMBOL_SUBSTITUTION_CHANCE_MAX = 0.2f;
+    private final float RANDOM_SYMBOL_SUBSTITUTION_CHANCE_MAX = 0.04f;
     private float randomSymbolSubstitutionChance;
     private final float RANDOM_COMMA_INSERTION_CHANCE_MIN = 0.0f;
-    private final float RANDOM_COMMA_INSERTION_CHANCE_MAX = 0.2f;
+    private final float RANDOM_COMMA_INSERTION_CHANCE_MAX = 0.04f;
     private float randomCommaInsertionChance;
     private final float RANDOM_COMMA_DELETION_CHANCE_MIN = 0.0f;
     private final float RANDOM_COMMA_DELETION_CHANCE_MAX = 2.0f;
     private float randomCommaDeletionChance;
     private final float RANDOM_SYMBOL_TRANSPOSITION_CHANCE_MIN = 0.0f;
-    private final float RANDOM_SYMBOL_TRANSPOSITION_CHANCE_MAX = 0.2f;
+    private final float RANDOM_SYMBOL_TRANSPOSITION_CHANCE_MAX = 0.05f;
     private float randomSymbolTranspositionChance;
     private final float UPPER_LOWER_CASE_FAILURE_CHANCE_MIN = 0.0f;
-    private final float UPPER_LOWER_CASE_FAILURE_CHANCE_MAX = 0.2f;
+    private final float UPPER_LOWER_CASE_FAILURE_CHANCE_MAX = 0.05f;
     private float upperLowerCaseFailureChance;
     private final float UPPER_LOWER_CASE_FAILURE_CHANCE_FOR_FIRST_LETTER_MIN = 0.0f;
     private final float UPPER_LOWER_CASE_FAILURE_CHANCE_FOR_FIRST_LETTER_MAX = 0.2f;
     private float upperLowerCaseFailureChanceForFirstLetter;
     private final float EMPTY_SPACE_INSERTION_CHANCE_MIN = 0.0f;
-    private final float EMPTY_SPACE_INSERTION_CHANCE_MAX = 0.6f;
+    private final float EMPTY_SPACE_INSERTION_CHANCE_MAX = 0.15f;
     private float emptySpaceInsertionChance;
     private final float EMPTY_SPACE_DELETION_CHANCE_MIN = 0.0f;
     private final float EMPTY_SPACE_DELETION_CHANCE_MAX = 0.6f;
     private float emptySpaceDeletionChance;
     private final float DOUBLE_LETTER_FAILURE_CHANCE_MIN = 0.0f;
-    private final float DOUBLE_LETTER_FAILURE_CHANCE_MAX = 0.2f;
+    private final float DOUBLE_LETTER_FAILURE_CHANCE_MAX = 0.1f;
     private float doubleLetterFailureChance;
     private final float SIMILAR_LETTER_FAILURE_CHANCE_MIN = 0.0f;
-    private final float SIMILAR_LETTER_FAILURE_CHANCE_MAX = 0.2f;
+    private final float SIMILAR_LETTER_FAILURE_CHANCE_MAX = 0.1f;
     private float similarLetterFailureChance;
     private final float MISTYPE_FAILURE_CHANCE_MIN = 0.0f;
-    private final float MISTYPE_FAILURE_CHANCE_MAX = 1.0f;
+    private final float MISTYPE_FAILURE_CHANCE_MAX = 0.2f;
     private float mistypeFailureChance;
     private float WRONG_WORD_BEGINNING_CHANCE_MIN = 0.0f;
-    private float WRONG_WORD_BEGINNING_CHANCE_MAX = 0.2f;
+    private float WRONG_WORD_BEGINNING_CHANCE_MAX = 0.1f;
     private float wrongWordBeginningChance;
     private float WRONG_WORD_ENDING_CHANCE_MIN = 0.0f;
-    private float WRONG_WORD_ENDING_CHANCE_MAX = 0.2f;
+    private float WRONG_WORD_ENDING_CHANCE_MAX = 0.1f;
     private float wrongWordEndingChance;
     private final float WORD_BLENDING_CHANCE_MIN = 0.0f;
-    private final float WORD_BLENDING_CHANCE_MAX = 0.1f;
+    private final float WORD_BLENDING_CHANCE_MAX = 0.05f;
     private final int MAX_WORD_BLENDING_RANGE = 6;
     private float wordBlendingChance;
     private final float WORD_SHIFT_FAILURE_CHANCE_MIN = 0.0f;
-    private final float WORD_SHIFT_FAILURE_CHANCE_MAX = 0.2f;
+    private final float WORD_SHIFT_FAILURE_CHANCE_MAX = 0.1f;
     private final float CHANCE_FOR_WORD_SWITCH_RANGE2 = 0.25f;
     private float wordShiftFailureChance;
     private final float FORM_OF_ADDRESS_FAILURE_CHANCE_MIN = 0.0f;
-    //private final float FORM_OF_ADDRESS_FAILURE_CHANCE_MAX = 0.4f;
-    private final float FORM_OF_ADDRESS_FAILURE_CHANCE_MAX = 0.0f;
+    private final float FORM_OF_ADDRESS_FAILURE_CHANCE_MAX = 0.4f;
+    //private final float FORM_OF_ADDRESS_FAILURE_CHANCE_MAX = 0.0f;
     private float formOfAddressFailureChance;
     private final float DAS_DAß_DASS_FAILURE_CHANCE_MIN = 0.0f;
-    //private final float DAS_DAß_DASS_FAILURE_CHANCE_MAX = 0.4f;
-    private final float DAS_DAß_DASS_FAILURE_CHANCE_MAX = 0.0f;
+    private final float DAS_DAß_DASS_FAILURE_CHANCE_MAX = 0.4f;
+    //private final float DAS_DAß_DASS_FAILURE_CHANCE_MAX = 0.0f;
     private float dasDaßDassFailureChance;
     private final float DER_DIE_DAS_FAILURE_CHANCE_MIN = 0.0f;
-    //private final float DER_DIE_DAS_FAILURE_CHANCE_MAX = 0.6f;
-    private final float DER_DIE_DAS_FAILURE_CHANCE_MAX = 0.0f;
+    private final float DER_DIE_DAS_FAILURE_CHANCE_MAX = 0.6f;
+    //private final float DER_DIE_DAS_FAILURE_CHANCE_MAX = 0.0f;
     private float derDieDasFailureChance;
     private final float WRONG_FILLER_WORD_FAILURE_CHANCE_MIN = 0.0f;
-    //private final float WRONG_FILLER_WORD_FAILURE_CHANCE_MAX = 0.4f;
-    private final float WRONG_FILLER_WORD_FAILURE_CHANCE_MAX = 0.0f;
+    private final float WRONG_FILLER_WORD_FAILURE_CHANCE_MAX = 0.4f;
+    //private final float WRONG_FILLER_WORD_FAILURE_CHANCE_MAX = 0.0f;
     private float wrongFillerWordFailureChance;
 
     public SpellingErrorGeneratorGerman()
@@ -158,7 +158,7 @@ public class SpellingErrorGeneratorGerman
         similarLetterList.add(new String[]{"sch", "sh", "ch"});
         similarLetterList.add(new String[]{"SCH", "SH", "CH"});
         similarLetterList.add(new String[]{"Sch", "Sh", "Ch"});
-        similarLetterList.add(new String[]{"i", "j", "y", "1", "l"});
+        similarLetterList.add(new String[]{"i", "j", "y", "1", "l", "ie"});
         similarLetterList.add(new String[]{"m", "n"});
         similarLetterList.add(new String[]{"f", "v", "w"});
         similarLetterList.add(new String[]{"dt", "td"});
@@ -343,19 +343,21 @@ public class SpellingErrorGeneratorGerman
         errorTextToFill.setLength(0);
         processWordReplacements(errorTextToFill);
         saveErrorTextToFillInSwap();
-        /*processWordShifts(errorTextToFillSwap, errorTextToFill);
+        processWordShifts(errorTextToFillSwap, errorTextToFill);
         saveErrorTextToFillInSwap();
         processWrongWordBeginningsAndEndings(errorTextToFillSwap, errorTextToFill);
         saveErrorTextToFillInSwap();
         processSimilarSymbols(errorTextToFillSwap, errorTextToFill);
-        saveErrorTextToFillInSwap();*/
+        saveErrorTextToFillInSwap();
         processUpperLowerCaseFailures(errorTextToFillSwap, errorTextToFill);
         saveErrorTextToFillInSwap();
-        /*saveErrorTextToFillInSwap();
         processSymbolSwapping(errorTextToFillSwap, errorTextToFill);
         saveErrorTextToFillInSwap();
-        processWordBlending(errorTextToFillSwap, errorTextToFill);*/
-
+        processTrivialLetterAndSymbolErrors(errorTextToFillSwap, errorTextToFill);
+        saveErrorTextToFillInSwap();
+        processDoubleSymbols(errorTextToFillSwap, errorTextToFill);
+        saveErrorTextToFillInSwap();
+        processWordBlending(errorTextToFillSwap, errorTextToFill);
         return errorTextToFill.toString();
     }
 
@@ -690,25 +692,88 @@ public class SpellingErrorGeneratorGerman
         for (int i = 0; i < errorText.length(); ++i)
         {
             char currentChar = errorText.charAt(i);
+            if(currentChar == '\n' || currentChar == '\r' || currentChar == '\t')
+            {
+                errorTextToFill.append(currentChar);
+                continue;
+            }
             if(random.nextFloat() <= mistypeFailureChance)
             {
                 final char[] possibleMistypes = mistypeLetters.get(currentChar);
                 if(possibleMistypes != null)
                     currentChar = possibleMistypes[random.nextInt(possibleMistypes.length)];
             }
-            if(Character.isLetter(currentChar) && random.nextFloat() <= randomSymbolInsertionChance)
+            if(random.nextFloat() <= randomSymbolInsertionChance)
             {
-                if(random.nextFloat() <= LETTER_CHANCE_FOR_RANDOM_SYMBOL)
-                    currentChar = (char)(random.nextInt(255) + 1);
-                else
-                    currentChar = randomLetters[random.nextInt(randomLetters.length)];
+                tryRandomSymbolInsertion(errorTextToFill, currentChar);
             }
+            if(random.nextFloat() <= randomSymbolSubstitutionChance)
+            {
+                if(tryRandomSymbolInsertion(errorTextToFill, currentChar))
+                    continue;
+            }
+            if(random.nextFloat() <= randomSymbolDeletionChance)
+                continue;
+            if(random.nextFloat() <= randomCommaInsertionChance)
+            {
+                errorTextToFill.append(random.nextBoolean() ? ',' : ';');
+                if(random.nextBoolean())
+                    errorTextToFill.append(' ');
+            }
+            if(random.nextFloat() <= randomCommaDeletionChance)
+            {
+                if(currentChar == ',' || currentChar == ';')
+                    continue;
+            }
+            if(random.nextFloat() <= emptySpaceInsertionChance)
+            {
+                errorTextToFill.append(' ');
+            }
+            if(random.nextFloat() <= emptySpaceDeletionChance)
+            {
+                if(currentChar == ' ')
+                    continue;
+            }
+            errorTextToFill.append(currentChar);
         }
+    }
+
+    private boolean tryRandomSymbolInsertion(StringBuilder errorTextToFill, char currentChar)
+    {
+        if (Character.isLetter(currentChar))
+        {
+            if (random.nextFloat() <= LETTER_CHANCE_FOR_RANDOM_SYMBOL)
+                errorTextToFill.append(letters[random.nextInt(letters.length)]);
+            else
+                errorTextToFill.append((char) (random.nextInt(255) + 1));
+            return true;
+        }
+        else if(random.nextFloat() > LETTER_CHANCE_FOR_RANDOM_SYMBOL)
+        {
+            errorTextToFill.append((char) (random.nextInt(255) + 1));
+            return true;
+        }
+        return false;
     }
 
     private void processDoubleSymbols(final StringBuilder errorText, final StringBuilder errorTextToFill)
     {
-        //TODO
+        for (int i = 0; i < errorText.length(); ++i)
+        {
+            final char currentChar = errorText.charAt(i);
+            if(currentChar == '\n' || currentChar == '\r' || currentChar == '\t')
+            {
+                errorTextToFill.append(currentChar);
+                continue;
+            }
+            if(random.nextFloat() <= doubleLetterFailureChance)
+            {
+                errorTextToFill.append(currentChar);
+                errorTextToFill.append(currentChar);
+            }
+            else
+                errorTextToFill.append(currentChar);
+        }
     }
 
     public void setOriginalText(String originalText)

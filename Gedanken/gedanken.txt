@@ -74,3 +74,16 @@ Modeloptimierung:
 4. Wird in der nachfolgenden Iteration einer ersetzung ersetzt, so blreibt es eine Ersetzung.
 5. Wird eine ersetzung entfernt so wird es eine Deletion
 6. Wird eine hinzufügung entfernt so wird das element der operation entfernt.
+
+
+LAYER SIZES:
+2048
+3072
+2048
+2048
+1536
+1024
+1024
+512
+256
+9

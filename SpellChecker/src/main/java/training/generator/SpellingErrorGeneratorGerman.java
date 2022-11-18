@@ -627,7 +627,7 @@ public class SpellingErrorGeneratorGerman
             final char currentChar = errorText.charAt(i);
             if(random.nextFloat() <= randomSymbolTranspositionChance)
             {
-                //ToDo
+                
             }
         }
     }

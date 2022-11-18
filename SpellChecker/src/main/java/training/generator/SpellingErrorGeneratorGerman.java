@@ -27,7 +27,7 @@ public class SpellingErrorGeneratorGerman
     private final ArrayList<EditOperation> editOperationAtIndex = new ArrayList<>();
 
     private final Random random = new Random();
-    private final float ERROR_CHANCES_VARIATION_FACTOR_MIN = 0.0f;
+    private final float ERROR_CHANCES_VARIATION_FACTOR_MIN = 1.0f;
     private final float ERROR_CHANCES_VARIATION_FACTOR_MAX = 1.0f;
     private float errorChancesVariationFactor;
     private final float LETTER_CHANCE_FOR_RANDOM_SYMBOL = 0.95f;
@@ -50,7 +50,7 @@ public class SpellingErrorGeneratorGerman
     private final float RANDOM_SYMBOL_TRANSPOSITION_CHANCE_MAX = 0.2f;
     private float randomSymbolTranspositionChance;
     private final float UPPER_LOWER_CASE_FAILURE_CHANCE_MIN = 0.0f;
-    private final float UPPER_LOWER_CASE_FAILURE_CHANCE_MAX = 1.0f;
+    private final float UPPER_LOWER_CASE_FAILURE_CHANCE_MAX = 0.2f;
     private float upperLowerCaseFailureChance;
     private final float UPPER_LOWER_CASE_FAILURE_CHANCE_FOR_FIRST_LETTER_MIN = 0.0f;
     private final float UPPER_LOWER_CASE_FAILURE_CHANCE_FOR_FIRST_LETTER_MAX = 0.2f;
@@ -85,16 +85,20 @@ public class SpellingErrorGeneratorGerman
     private final float CHANCE_FOR_WORD_SWITCH_RANGE2 = 0.25f;
     private float wordShiftFailureChance;
     private final float FORM_OF_ADDRESS_FAILURE_CHANCE_MIN = 0.0f;
-    private final float FORM_OF_ADDRESS_FAILURE_CHANCE_MAX = 0.4f;
+    //private final float FORM_OF_ADDRESS_FAILURE_CHANCE_MAX = 0.4f;
+    private final float FORM_OF_ADDRESS_FAILURE_CHANCE_MAX = 0.0f;
     private float formOfAddressFailureChance;
     private final float DAS_DAß_DASS_FAILURE_CHANCE_MIN = 0.0f;
-    private final float DAS_DAß_DASS_FAILURE_CHANCE_MAX = 0.4f;
+    //private final float DAS_DAß_DASS_FAILURE_CHANCE_MAX = 0.4f;
+    private final float DAS_DAß_DASS_FAILURE_CHANCE_MAX = 0.0f;
     private float dasDaßDassFailureChance;
     private final float DER_DIE_DAS_FAILURE_CHANCE_MIN = 0.0f;
-    private final float DER_DIE_DAS_FAILURE_CHANCE_MAX = 0.6f;
+    //private final float DER_DIE_DAS_FAILURE_CHANCE_MAX = 0.6f;
+    private final float DER_DIE_DAS_FAILURE_CHANCE_MAX = 0.0f;
     private float derDieDasFailureChance;
     private final float WRONG_FILLER_WORD_FAILURE_CHANCE_MIN = 0.0f;
-    private final float WRONG_FILLER_WORD_FAILURE_CHANCE_MAX = 0.4f;
+    //private final float WRONG_FILLER_WORD_FAILURE_CHANCE_MAX = 0.4f;
+    private final float WRONG_FILLER_WORD_FAILURE_CHANCE_MAX = 0.0f;
     private float wrongFillerWordFailureChance;
 
     public SpellingErrorGeneratorGerman()
@@ -339,13 +343,18 @@ public class SpellingErrorGeneratorGerman
         errorTextToFill.setLength(0);
         processWordReplacements(errorTextToFill);
         saveErrorTextToFillInSwap();
-        processWordShifts(errorTextToFillSwap, errorTextToFill);
-        saveErrorTextToFillInSwap();
-        processWordBlending(errorTextToFillSwap, errorTextToFill);
+        /*processWordShifts(errorTextToFillSwap, errorTextToFill);
         saveErrorTextToFillInSwap();
         processWrongWordBeginningsAndEndings(errorTextToFillSwap, errorTextToFill);
         saveErrorTextToFillInSwap();
         processSimilarSymbols(errorTextToFillSwap, errorTextToFill);
+        saveErrorTextToFillInSwap();*/
+        processUpperLowerCaseFailures(errorTextToFillSwap, errorTextToFill);
+        saveErrorTextToFillInSwap();
+        /*saveErrorTextToFillInSwap();
+        processSymbolSwapping(errorTextToFillSwap, errorTextToFill);
+        saveErrorTextToFillInSwap();
+        processWordBlending(errorTextToFillSwap, errorTextToFill);*/
 
         return errorTextToFill.toString();
     }
@@ -622,14 +631,84 @@ public class SpellingErrorGeneratorGerman
 
     private void processSymbolSwapping(final StringBuilder errorText, final StringBuilder errorTextToFill)
     {
-        for (int i = 0;i < errorText.length();++i)
+        char previousChar = errorText.charAt(0);
+        char currentChar = previousChar;
+        boolean lastSymbolAdded = false;
+        for (int i = 1;i < errorText.length();++i)
         {
-            final char currentChar = errorText.charAt(i);
+            currentChar = errorText.charAt(i);
             if(random.nextFloat() <= randomSymbolTranspositionChance)
             {
-                
+                errorTextToFill.append(currentChar);
+                errorTextToFill.append(previousChar);
+                ++i;
+                if(i < errorText.length())
+                    previousChar = errorText.charAt(i);
+                else
+                    lastSymbolAdded = true;
+            }
+            else
+            {
+                errorTextToFill.append(previousChar);
+                previousChar = currentChar;
             }
         }
+        if(!lastSymbolAdded)
+            errorTextToFill.append(currentChar);
+    }
+
+    private void processUpperLowerCaseFailures(final StringBuilder errorText, final StringBuilder errorTextToFill)
+    {
+        boolean lastCharWasntLetter = true;
+        for (int i = 0; i < errorText.length(); ++i)
+        {
+            final char currentChar = errorText.charAt(i);
+            if(Character.isLetter(currentChar))
+            {
+                if ((lastCharWasntLetter && random.nextFloat() <= upperLowerCaseFailureChanceForFirstLetter || !lastCharWasntLetter && random.nextFloat() <= upperLowerCaseFailureChance))
+                {
+                    if (Character.isUpperCase(currentChar))
+                        errorTextToFill.append(Character.toLowerCase(currentChar));
+                    else
+                        errorTextToFill.append(Character.toUpperCase(currentChar));
+                }
+                else
+                    errorTextToFill.append(currentChar);
+                lastCharWasntLetter = false;
+            }
+            else
+            {
+                errorTextToFill.append(currentChar);
+                lastCharWasntLetter = true;
+            }
+        }
+    }
+
+    private void processTrivialLetterAndSymbolErrors(final StringBuilder errorText, final StringBuilder errorTextToFill)
+    {
+        //errortypes: mistype, emptyspaceinsert, emptyspacedelete, randomCommaDelete, randomCommaInsert, randomSymbolInsert, randomSymbolDelete, randomSymbolSubstitution
+        for (int i = 0; i < errorText.length(); ++i)
+        {
+            char currentChar = errorText.charAt(i);
+            if(random.nextFloat() <= mistypeFailureChance)
+            {
+                final char[] possibleMistypes = mistypeLetters.get(currentChar);
+                if(possibleMistypes != null)
+                    currentChar = possibleMistypes[random.nextInt(possibleMistypes.length)];
+            }
+            if(Character.isLetter(currentChar) && random.nextFloat() <= randomSymbolInsertionChance)
+            {
+                if(random.nextFloat() <= LETTER_CHANCE_FOR_RANDOM_SYMBOL)
+                    currentChar = (char)(random.nextInt(255) + 1);
+                else
+                    currentChar = randomLetters[random.nextInt(randomLetters.length)];
+            }
+        }
+    }
+
+    private void processDoubleSymbols(final StringBuilder errorText, final StringBuilder errorTextToFill)
+    {
+        //TODO
     }
 
     public void setOriginalText(String originalText)

@@ -87,3 +87,39 @@ LAYER SIZES:
 512
 256
 9
+[Hallo Du da]
+[Hallo die da]
+
+mistype
+similarletter
+doubleletterfailur
+emptyspaceDeletion
+emptySpaceInsertion
+upperLowerCaseFailureFirstLetter
+upperLowerCaseFailure
+randomSymbolTransposition
+randomCommaDeletion
+randomCommaInsertion
+randomSymbolSubstitution
+randomSymbolDeletion
+randomSymbolInsertion
+
+randomSymbolTranspositon processing
+SimilarLetter processing
+
+processing
+{
+mistype (insertion, substitution)
+doubleletterfailur
+emptyspaceDeletion
+emptySpaceInsertion
+upperLowerCaseFailureFirstLetter
+upperLowerCaseFailure
+randomCommaDeletion
+randomCommaInsertion
+randomSymbolSubstitution
+randomSymbolDeletion
+randomSymbolInsertion
+}
+
+wie mit zeilenumbrüchen umgehen? => darf nicht manipuliert werden

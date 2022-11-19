@@ -24,7 +24,7 @@ public class SpellingErrorGeneratorGerman
     private StringBuilder errorTextToFill = new StringBuilder();
     private StringBuilder errorTextToFillSwap = new StringBuilder();
 
-    private final ArrayList<EditOperation> editOperationAtIndex = new ArrayList<>();
+    //private final ArrayList<EditOperation> editOperationAtIndex = new ArrayList<>();
 
     private final Random random = new Random();
     private final float ERROR_CHANCES_VARIATION_FACTOR_MIN = 0.0f;

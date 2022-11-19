@@ -1,4 +1,4 @@
-package training.generator;
+package training.generation;
 
 public enum EditOperation
 {

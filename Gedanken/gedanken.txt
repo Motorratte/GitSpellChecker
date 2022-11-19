@@ -77,16 +77,16 @@ Modeloptimierung:
 
 
 LAYER SIZES:
-2048
-3072
-2048
-2048
-1536
-1024
-1024
-512
-256
-9
+2048 3072
+3072 4096
+2048 3072
+2048 2048
+1536 1536
+1024 1024
+1024 1024
+512  512
+256  256
+9    16
 [Hallo Du da]
 [Hallo die da]
 
@@ -123,3 +123,13 @@ randomSymbolInsertion
 }
 
 wie mit zeilenumbrüchen umgehen? => darf nicht manipuliert werden
+
+Text1
+Text2
+Text3
+Text4
+
+Texte Sind Strings diese werden um jeweils ein wort verschoben in schiebefenster große strings zerlegt (also mit überschneidung)
+
+896Korregiertvorher 384unkorregiertvorher 512Korrektur 896restfenster = 2560
+512+1024 ist aktuelles fenster, von dem die ersten 512 zeichen zu korrigieren sind

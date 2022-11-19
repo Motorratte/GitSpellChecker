@@ -1,4 +1,4 @@
-package training.generator;
+package training.generation;
 
 import java.util.ArrayList;
 import java.util.HashMap;

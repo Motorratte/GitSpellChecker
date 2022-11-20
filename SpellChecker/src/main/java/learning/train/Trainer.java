@@ -30,7 +30,7 @@ public class Trainer
     {
         final MultiLayerNetwork model = ModelManager.createSpellingErrorCorrectionModelA();
         final FileReader reader = new FileReader(filePath);
-        
+
     }
 
 }

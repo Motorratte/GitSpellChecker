@@ -120,19 +120,20 @@ public class ModelManager
         return toFillIndex;
     }
 
-    public static boolean getSampleFromTextAndConvertItToFailureText(final String textOriginal, final SpellingErrorGeneratorGerman errorGenerator, final Random random,final float[] dataToFill, final float[] labelsToFill) //returns two float arrays with data and labels
+    public static String getSampleFromTextAndConvertItToFailureText(final String textOriginal, final SpellingErrorGeneratorGerman errorGenerator, final Random random,final float[] dataToFill, final float[] labelsToFill) //returns two float arrays with data and labels
     {
         if(textOriginal.length() < MIN_TEXT_SIZE_FOR_SPELLCHECK)
-            return false;
+            return null;
         errorGenerator.updateFactors();
         final int mainWindowStartIndex = random.nextInt(textOriginal.length() - MIN_TEXT_SIZE_FOR_SPELLCHECK);
         final String mainWindowOriginal = textOriginal.substring(mainWindowStartIndex, Math.min(mainWindowStartIndex + MAIN_WINDOW_SIZE, textOriginal.length()));
-        final String labelText = mainWindowOriginal.substring(0, NUMBER_OF_OUTPUT_SYMBOLS);
+        final String labelText = mainWindowOriginal.substring(0, Math.min(mainWindowOriginal.length(), NUMBER_OF_OUTPUT_SYMBOLS));
         errorGenerator.setOriginalText(mainWindowOriginal);
         final String mainWindow = errorGenerator.generateErrorText();
         final String previousWindow = textOriginal.substring(Math.max(0, mainWindowStartIndex - PREVIOUS_WINDOW_SIZE), mainWindowStartIndex);
         errorGenerator.setOriginalText(previousWindow);
-        final String previousErrorWindow = errorGenerator.generateErrorText();
+        String previousErrorWindow =  errorGenerator.generateErrorText();
+        previousErrorWindow = previousErrorWindow.substring(Math.max(0, previousErrorWindow.length() - PREVIOUS_ERROR_WINDOW_SIZE));
 
         int dataIndex = 0; //previousWindow + previousErrorWindow + mainWindow
         int labelIndex = 0; //labelText
@@ -144,6 +145,6 @@ public class ModelManager
         labelIndex = fillFloatFromText(labelsToFill, labelText, labelIndex, labelIndex + NUMBER_OF_OUTPUT_SYMBOLS * OUTPUT_SYMBOL_SIZE);
         if(labelIndex != NUMBER_OF_OUTPUTS)
             throw new RuntimeException("labelIndex != NUMBER_OF_OUTPUTS");
-        return true;
+        return "Error Text:" + previousErrorWindow + mainWindow + "\nCorrect Text:" + previousWindow + mainWindowOriginal + "\nLabelText" + labelText;
     }
 }

@@ -1,4 +1,4 @@
-package training.generation;
+package learning.generate;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -340,6 +340,10 @@ public class SpellingErrorGeneratorGerman
 
     public String generateErrorText()
     {
+        if (originalText == null || originalText.length() == 0)
+        {
+            return "";
+        }
         errorTextToFill.setLength(0);
         processWordReplacements(errorTextToFill);
         saveErrorTextToFillInSwap();

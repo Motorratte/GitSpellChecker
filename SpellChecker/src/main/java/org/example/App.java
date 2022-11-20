@@ -1,6 +1,6 @@
 package org.example;
 
-import training.generation.SpellingErrorGeneratorGerman;
+import learning.generate.SpellingErrorGeneratorGerman;
 
 /**
  * Hello world!

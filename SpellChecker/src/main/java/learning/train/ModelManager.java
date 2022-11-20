@@ -22,7 +22,6 @@ public class ModelManager
     public static final int[] DENSE_LAYER_SIZES = new int[]{2880, 3072, 2560, 2048, 1536, 1024, 768, 512};
     public static final int NUMBER_OF_FILTERS = 256;
     public static final double LEARNING_RATE = 0.0001;
-    public static final int BATCH_SIZE = 8;
     public static final int EPOCHS = 1;
     public static final int NUMBER_OF_OUTPUT_SYMBOLS = 64;
     public static final int OUTPUT_SYMBOL_SIZE = 8;
@@ -65,13 +64,13 @@ public class ModelManager
         return model;
     }
 
-    public static float[] predict(MultiLayerNetwork model, float[][] input) //[batch, 3072]
+    public static float[] predict(MultiLayerNetwork model, float[][] input) //[batch, input]
     {
         final INDArray outputArray = model.output(Nd4j.create(input));
         return outputArray.toFloatVector();
     }
 
-    public static void train(MultiLayerNetwork model, float[][] input, float[][] labels) //[batch, 3072]
+    public static void train(MultiLayerNetwork model, float[][] input, float[][] labels) //[batch, input]
     {
         model.fit(Nd4j.create(input), Nd4j.create(labels));
     }

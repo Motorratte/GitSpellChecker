@@ -15,6 +15,8 @@ import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.learning.config.Adam;
 import org.nd4j.linalg.lossfunctions.LossFunctions;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Random;
 
 public class ModelManager
@@ -73,6 +75,33 @@ public class ModelManager
     public static void train(MultiLayerNetwork model, float[][] input, float[][] labels) //[batch, input]
     {
         model.fit(Nd4j.create(input), Nd4j.create(labels));
+    }
+
+    public static boolean saveModel(MultiLayerNetwork model, String path)
+    {
+        try
+        {
+            model.save(new File(path), true);
+            return true;
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static MultiLayerNetwork loadModel(String path)
+    {
+        try
+        {
+            return MultiLayerNetwork.load(new File(path), true);
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     private static int fillFloatFromText(final float[] toFill, final String text, int toFillIndex, final int endIndex) //returns new Index

@@ -30,15 +30,16 @@ public class Trainer
         }
     }
 
-    public void train(int epochs) throws IOException
+    public void train(int epochs,int printFrequency,String saveModelPath) throws IOException
     {
-        //final MultiLayerNetwork model = ModelManager.createSpellingErrorCorrectionModelA();
+        final MultiLayerNetwork model = ModelManager.createSpellingErrorCorrectionModelA();
+        //ModelManager.saveModel(model, "src/main/java/learning/train/saves/testModel2.net");
         //read textfile line by line
 
         final SpellingErrorGeneratorGerman generator = new SpellingErrorGeneratorGerman();
         final Random random = new Random();
         String line;
-        for(int epoch = 0; epoch < epochs;++epoch)
+        for(int epoch = 0,trainingIteration = 0; epoch < epochs;++epoch)
         {
             final BufferedReader reader = new BufferedReader(new FileReader(filePath));
             while ((line = reader.readLine()) != null)
@@ -46,18 +47,27 @@ public class Trainer
                 final float[] inputToFill = inputBatch[batchIndex];
                 final float[] labelToFill = labelBatch[batchIndex];
                 final String contextAsText = ModelManager.getSampleFromTextAndConvertItToFailureText(line, generator, random, inputToFill, labelToFill);
+                //final String labelAsString = ModelManager.convertFloatArrayToString(labelToFill);
                 if (contextAsText != null)
                 {
-                    System.out.println(contextAsText);
+                    //System.out.println(contextAsText);
                     ++batchIndex;
                     if (batchIndex == BATCH_SIZE)
                     {
-                        //ModelManager.train(model, inputBatch, labelBatch);
+                        //System.out.println("Training with batch");
+                        ModelManager.train(model, inputBatch, labelBatch);
+                        if(trainingIteration % printFrequency == 0)
+                        {
+                            String result = ModelManager.convertFloatArrayToString(ModelManager.predict(model, new float[][]{inputBatch[0]}));
+                            System.out.println("Label: " + ModelManager.convertFloatArrayToString(labelBatch[0]));
+                            System.out.println("Result: " + result);
+                        }
+                        ++trainingIteration;
                         batchIndex = 0;
                     }
                 }
             }
         }
+        ModelManager.saveModel(model, saveModelPath);
     }
-
 }

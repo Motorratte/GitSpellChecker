@@ -18,6 +18,7 @@ import org.nd4j.linalg.lossfunctions.LossFunctions;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Random;
 
 import static com.sun.org.apache.xml.internal.serialize.Method.TEXT;
@@ -28,7 +29,7 @@ public class ModelManager
     //public static final int[] DENSE_LAYER_SIZES = new int[]{1536,2048,1024,256};
 
     //public static final int[] DENSE_LAYER_SIZES = new int[]{1024};
-    public static final double LEARNING_RATE = 0.00002;
+    public static final double LEARNING_RATE = 0.00005;
     public static final int NUMBER_OF_OUTPUT_SYMBOLS = 1;
     public static final int SYMBOL_BIT_SIZE = 8;
     public static final int NUMBER_OF_OUTPUTS = NUMBER_OF_OUTPUT_SYMBOLS * SYMBOL_BIT_SIZE;
@@ -36,7 +37,8 @@ public class ModelManager
     public static final int PREVIOUS_ERROR_WINDOW_SIZE = 48;
     public static final int MAIN_WINDOW_SIZE = NUMBER_OF_OUTPUT_SYMBOLS + PREVIOUS_WINDOW_SIZE;
     public static final int MIN_TEXT_SIZE_FOR_SPELLCHECK = 3;
-    public static final int NUMBER_OF_INPUTS_CLASS_A = (PREVIOUS_WINDOW_SIZE + PREVIOUS_ERROR_WINDOW_SIZE + MAIN_WINDOW_SIZE) * SYMBOL_BIT_SIZE; //896Korregiertvorher 384unkorregiertvorher 512Korrektur 896restfenster = 2688
+    public static final int NUMBER_OF_INPUTS_CLASS_A = (PREVIOUS_WINDOW_SIZE + PREVIOUS_ERROR_WINDOW_SIZE + MAIN_WINDOW_SIZE) * SYMBOL_BIT_SIZE; //896Korregiertvorher 384unkorregiertvorher 8Korrektur 896restfenster = 2440
+    public static final int NUMBER_OF_INPUTS_CLASS_B = (NUMBER_OF_OUTPUT_SYMBOLS * 3 + PREVIOUS_WINDOW_SIZE + PREVIOUS_ERROR_WINDOW_SIZE + MAIN_WINDOW_SIZE) * SYMBOL_BIT_SIZE; //24PreviousOutputs 1024Korregiertvorher 384unkorregiertvorher 8Korrektur 1024restfenster = 2464
     public static final int MAX_CHAR_VALUE = (1 << SYMBOL_BIT_SIZE) - 1;
 
     public static MultiLayerNetwork createSpellingErrorCorrectionModelA()
@@ -70,10 +72,56 @@ public class ModelManager
         return model;
     }
 
+    public static MultiLayerNetwork createSpellingErrorCorrectionModelB()
+    {
+        NeuralNetConfiguration.ListBuilder builder = new NeuralNetConfiguration.Builder()
+                .seed(123)
+                .updater(new Adam(LEARNING_RATE))
+                .l2(0)
+                .list();
+
+        for (int i = 0; i < DENSE_LAYER_SIZES.length; ++i)
+        {
+            builder.layer(i, new DenseLayer.Builder()
+                    .nIn(i == 0 ? NUMBER_OF_INPUTS_CLASS_B : DENSE_LAYER_SIZES[i - 1])
+                    .nOut(DENSE_LAYER_SIZES[i])
+                    .activation(Activation.RELU)
+                    .weightInit(WeightInit.XAVIER)
+                    .build());
+        }
+        builder.layer(DENSE_LAYER_SIZES.length, new OutputLayer.Builder(LossFunctions.LossFunction.MSE)
+                .nIn(DENSE_LAYER_SIZES.length == 0 ? NUMBER_OF_INPUTS_CLASS_B : DENSE_LAYER_SIZES[DENSE_LAYER_SIZES.length - 1])
+                .nOut(NUMBER_OF_OUTPUTS)
+                .activation(Activation.SIGMOID)
+                .weightInit(WeightInit.XAVIER)
+                .build());
+        builder.setInputType(InputType.feedForward(NUMBER_OF_INPUTS_CLASS_B));
+        final MultiLayerConfiguration conf = builder.build();
+        final MultiLayerNetwork model = new MultiLayerNetwork(conf);
+        model.init();
+        model.setListeners(new ScoreIterationListener(50));
+        return model;
+    }
+
     public static float[] predict(MultiLayerNetwork model, float[][] input) //[batch, input]
     {
         final INDArray outputArray = model.output(Nd4j.create(input));
-        return outputArray.toFloatVector();
+        //get number of dimensions
+        final int dimensions = outputArray.shape().length;
+        if (dimensions == 1)
+        {
+            return outputArray.toFloatVector();
+        }
+        else
+        {
+            final float[][] output = outputArray.toFloatMatrix();
+            float[] result = new float[output.length * output[0].length];
+            for (int i = 0; i < output.length; ++i)
+            {
+                System.arraycopy(output[i], 0, result, i * NUMBER_OF_OUTPUTS, NUMBER_OF_OUTPUTS);
+            }
+            return result;
+        }
     }
 
     public static void train(MultiLayerNetwork model, float[][] input, float[][] labels) //[batch, input]
@@ -99,7 +147,9 @@ public class ModelManager
     {
         try
         {
-            return MultiLayerNetwork.load(new File(path), true);
+            final MultiLayerNetwork model = MultiLayerNetwork.load(new File(path), true);
+            model.setListeners(new ScoreIterationListener(50));
+            return model;
         }
         catch (IOException e)
         {
@@ -181,7 +231,7 @@ public class ModelManager
         return "Error Text main: " + mainWindow + "\nCorrect Text main: " + mainWindowOriginal + "\nLabelText: " + labelText;
     }
 
-    public static void testModel(BufferedReader reader, final MultiLayerNetwork model, final SpellingErrorGeneratorGerman errorGenerator, final Random random, final int numberOfTests) throws IOException
+    public static void testModel(BufferedReader reader, final List<MultiLayerNetwork> models, final SpellingErrorGeneratorGerman errorGenerator, final Random random, final int numberOfTests) throws IOException
     {
         final float[] data = new float[NUMBER_OF_INPUTS_CLASS_A];
         final float[] labels = new float[NUMBER_OF_OUTPUTS];
@@ -190,6 +240,7 @@ public class ModelManager
         int failureProduced = 0;
         int numberOfFailures = 0;
         int total = 0;
+        float[][] outputs = new float[models.size()][];
         for (int i = 0; i < numberOfTests;)
         {
             final String text = reader.readLine();
@@ -197,8 +248,27 @@ public class ModelManager
             if (sample == null)
                 continue;
             ++i;
-            final float[] output = predict(model, new float[][]{data});
-            final String outputString = convertFloatArrayToString(output);
+            float[][] data2D = new float[][]{data};
+            for (int j = 0; j < models.size(); ++j)
+            {
+                outputs[j] = predict(models.get(j), data2D);
+            }
+            final float[] outputAverage = new float[outputs[0].length];
+            for(int j = 0; j < outputs.length; ++j)
+            {
+                final float[] currentOutput = outputs[j];
+                for(int k = 0; k < currentOutput.length; ++k)
+                {
+                    outputAverage[k] += currentOutput[k];
+                }
+            }
+            for(int j = 0; j < outputAverage.length; ++j)
+            {
+                outputAverage[j] /= outputs.length;
+            }
+
+
+            final String outputString = convertFloatArrayToString(outputAverage);
             final String labelString = convertFloatArrayToString(labels);
             final boolean labelEqualsToInput = labelString.equals("" + sample.charAt(17)) || labelString.charAt(0) >= MAX_CHAR_VALUE;
             if (outputString.equals(labelString))

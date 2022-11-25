@@ -4,6 +4,7 @@ import learning.generate.SpellingErrorGeneratorGerman;
 import org.deeplearning4j.nn.conf.MultiLayerConfiguration;
 import org.deeplearning4j.nn.conf.NeuralNetConfiguration;
 import org.deeplearning4j.nn.conf.inputs.InputType;
+import org.deeplearning4j.nn.conf.layers.Convolution1D;
 import org.deeplearning4j.nn.conf.layers.DenseLayer;
 import org.deeplearning4j.nn.conf.layers.OutputLayer;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
@@ -25,8 +26,8 @@ import static com.sun.org.apache.xml.internal.serialize.Method.TEXT;
 
 public class ModelManager
 {
-    public static final int[] DENSE_LAYER_SIZES = new int[]{2880, 3072, 2560, 2048, 1536, 1024, 768, 512};
-    //public static final int[] DENSE_LAYER_SIZES = new int[]{1536,2048,1024,256};
+    //public static final int[] DENSE_LAYER_SIZES = new int[]{2880, 3072, 2560, 2048, 1536, 1024, 768, 512};
+    public static final int[] DENSE_LAYER_SIZES = new int[]{1792, 2176, 1536,1024, 768, 512};
 
     //public static final int[] DENSE_LAYER_SIZES = new int[]{1024};
     public static final double LEARNING_RATE = 0.00005;
@@ -68,11 +69,16 @@ public class ModelManager
         final MultiLayerConfiguration conf = builder.build();
         final MultiLayerNetwork model = new MultiLayerNetwork(conf);
         model.init();
-        model.setListeners(new ScoreIterationListener(50));
+        model.setListeners(new ScoreIterationListener(10));
         return model;
     }
 
-    public static MultiLayerNetwork createSpellingErrorCorrectionModelB()
+    public static int getNumberOfInputsForModelB(final int numberOfPreviousOutputs)
+    {
+        return (numberOfPreviousOutputs * 3 + PREVIOUS_WINDOW_SIZE + PREVIOUS_ERROR_WINDOW_SIZE + MAIN_WINDOW_SIZE) * SYMBOL_BIT_SIZE;
+    }
+
+    public static MultiLayerNetwork createSpellingErrorCorrectionModelB() //TODO make number of inputs local to make class B net generic with its inputs
     {
         NeuralNetConfiguration.ListBuilder builder = new NeuralNetConfiguration.Builder()
                 .seed(123)
@@ -99,7 +105,7 @@ public class ModelManager
         final MultiLayerConfiguration conf = builder.build();
         final MultiLayerNetwork model = new MultiLayerNetwork(conf);
         model.init();
-        model.setListeners(new ScoreIterationListener(50));
+        model.setListeners(new ScoreIterationListener(1));
         return model;
     }
 
@@ -148,7 +154,7 @@ public class ModelManager
         try
         {
             final MultiLayerNetwork model = MultiLayerNetwork.load(new File(path), true);
-            model.setListeners(new ScoreIterationListener(50));
+            model.setListeners(new ScoreIterationListener(10));
             return model;
         }
         catch (IOException e)
@@ -231,9 +237,10 @@ public class ModelManager
         return "Error Text main: " + mainWindow + "\nCorrect Text main: " + mainWindowOriginal + "\nLabelText: " + labelText;
     }
 
-    public static void testModel(BufferedReader reader, final List<MultiLayerNetwork> models, final SpellingErrorGeneratorGerman errorGenerator, final Random random, final int numberOfTests) throws IOException
+    public static void testModel(BufferedReader reader, final List<MultiLayerNetwork> previousModels, final List<MultiLayerNetwork> models, final SpellingErrorGeneratorGerman errorGenerator, final Random random, final int numberOfTests) throws IOException
     {
         final float[] data = new float[NUMBER_OF_INPUTS_CLASS_A];
+        final float[] dataB = (previousModels == null || previousModels.size() == 0) ? null : new float[NUMBER_OF_INPUTS_CLASS_B];
         final float[] labels = new float[NUMBER_OF_OUTPUTS];
         int correct = 0;
         int failureCorrected = 0;
@@ -241,7 +248,7 @@ public class ModelManager
         int numberOfFailures = 0;
         int total = 0;
         float[][] outputs = new float[models.size()][];
-        for (int i = 0; i < numberOfTests;)
+        for (int i = 0; i < numberOfTests; )
         {
             final String text = reader.readLine();
             final String sample = getSampleFromTextAndConvertItToFailureText(text, errorGenerator, random, data, labels);
@@ -249,20 +256,31 @@ public class ModelManager
                 continue;
             ++i;
             float[][] data2D = new float[][]{data};
+            if (dataB != null)
+            {
+                for (int j = 0; j < previousModels.size(); ++j)
+                {
+                    final MultiLayerNetwork previousModel = previousModels.get(j);
+                    final float[] output = predict(previousModel, data2D);
+                    System.arraycopy(output, 0, dataB, j * NUMBER_OF_OUTPUTS, NUMBER_OF_OUTPUTS);
+                }
+                System.arraycopy(data, 0, dataB, dataB.length - data.length, data.length);
+                data2D = new float[][]{dataB};
+            }
             for (int j = 0; j < models.size(); ++j)
             {
                 outputs[j] = predict(models.get(j), data2D);
             }
             final float[] outputAverage = new float[outputs[0].length];
-            for(int j = 0; j < outputs.length; ++j)
+            for (int j = 0; j < outputs.length; ++j)
             {
                 final float[] currentOutput = outputs[j];
-                for(int k = 0; k < currentOutput.length; ++k)
+                for (int k = 0; k < currentOutput.length; ++k)
                 {
                     outputAverage[k] += currentOutput[k];
                 }
             }
-            for(int j = 0; j < outputAverage.length; ++j)
+            for (int j = 0; j < outputAverage.length; ++j)
             {
                 outputAverage[j] /= outputs.length;
             }

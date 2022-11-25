@@ -19,14 +19,16 @@ public class FailureRateTest
         System.out.println("Starting FailureRateTest");
         ArrayList<MultiLayerNetwork> modelList = new ArrayList<>();
         modelList.add(ModelManager.loadModel("src/main/java/learning/train/saves/testModelHeavyNew.net"));
-        modelList.add(ModelManager.loadModel("src/main/java/learning/train/saves/testModelMiddlenew.net"));
+        modelList.add(ModelManager.loadModel("src/main/java/learning/train/saves/testModelMiddleNew.net"));
         modelList.add(ModelManager.loadModel("src/main/java/learning/train/saves/testModelMiddle2New.net"));
         //modelList.add(ModelManager.loadModel("src/main/java/learning/train/saves/testModel.net"));
         //modelList.add(ModelManager.loadModel("src/main/java/learning/train/saves/testModelHeavy.net"));
+        ArrayList<MultiLayerNetwork> modelList2 = new ArrayList<>();
+        modelList2.add(ModelManager.loadModel("src/main/java/learning/train/saves/modelB4914192429343944.net"));
 
         try (BufferedReader reader = new BufferedReader(new FileReader("src/main/java/learning/train/data/europarl-v7.de-en.datade")))
         {
-            ModelManager.testModel(reader,modelList,new SpellingErrorGeneratorGerman(),new Random(),10000);
+            ModelManager.testModel(reader,null,modelList2,new SpellingErrorGeneratorGerman(),new Random(),30000);
         }
 
     }

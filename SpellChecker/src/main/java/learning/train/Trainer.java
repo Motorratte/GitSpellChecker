@@ -49,18 +49,20 @@ public class Trainer
         }
 
     }
-    public void train(int epochs, int printFrequency, List<MultiLayerNetwork> previousModels, String saveModelPath) throws IOException
+    public void train(int epochs, int printFrequency, List<MultiLayerNetwork> previousModels, String saveModelPath, String addToSaveModelPathIfModelExists) throws IOException
     {
         //check if model at path exists
         final MultiLayerNetwork model;
         if (new java.io.File(saveModelPath).exists())
         {
+            if(addToSaveModelPathIfModelExists == null)
+                addToSaveModelPathIfModelExists = "New.net";
             System.out.println("Loading model from path: " + saveModelPath);
             model = ModelManager.loadModel(saveModelPath);
             System.out.println("Model loaded!");
             saveModelPath = saveModelPath.substring(0,saveModelPath.lastIndexOf('.'));
-            System.out.println("Changing save path to: " + saveModelPath + "New.net");
-            saveModelPath = saveModelPath + "New.net";
+            System.out.println("Changing save path to: " + saveModelPath + addToSaveModelPathIfModelExists);
+            saveModelPath = saveModelPath + addToSaveModelPathIfModelExists;
         }
         else
         {
@@ -111,6 +113,12 @@ public class Trainer
                         batchIndex = 0;
                     }
                 }
+            }
+            if((epoch + 1) % 5 == 0)
+            {
+                saveModelPath = saveModelPath.substring(0,saveModelPath.lastIndexOf('.'));
+                saveModelPath = saveModelPath + epoch + ".net";
+                ModelManager.saveModel(model, saveModelPath);
             }
         }
         ModelManager.saveModel(model, saveModelPath);

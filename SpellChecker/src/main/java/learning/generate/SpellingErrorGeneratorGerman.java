@@ -28,7 +28,7 @@ public class SpellingErrorGeneratorGerman
 
     private final Random random = new Random();
     private final float ERROR_CHANCES_VARIATION_FACTOR_MIN = 0.0f;
-    private final float ERROR_CHANCES_VARIATION_FACTOR_MAX = 0.3f;
+    private final float ERROR_CHANCES_VARIATION_FACTOR_MAX = 0.05f;
     private float errorChancesVariationFactor;
     private final float LETTER_CHANCE_FOR_RANDOM_SYMBOL = 0.95f;
     private final float RANDOM_SYMBOL_INSERTION_CHANCE_MIN = 0.0f;

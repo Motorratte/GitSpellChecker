@@ -237,6 +237,20 @@ public class ModelManager
         return "Error Text main: " + mainWindow + "\nCorrect Text main: " + mainWindowOriginal + "\nLabelText: " + labelText;
     }
 
+    public static void getTextWindowFromIndexAsFloat(final int mainWindowStartIndex, final String text, final StringBuilder fixedPart, final float[] dataToFill)
+    {
+        final String previousWindowFixed = fixedPart.substring(Math.max(0, fixedPart.length() - PREVIOUS_WINDOW_SIZE));
+        final String previousErrorWindow = text.substring(Math.max(0, mainWindowStartIndex - PREVIOUS_ERROR_WINDOW_SIZE), mainWindowStartIndex);
+        final String mainWindow = text.substring(mainWindowStartIndex, Math.min(mainWindowStartIndex + MAIN_WINDOW_SIZE, text.length()));
+
+        int dataIndex = 0; //previousWindowFixed + previousErrorWindow + mainWindow
+        dataIndex = fillFloatFromText(dataToFill, previousWindowFixed, dataIndex, dataIndex + PREVIOUS_WINDOW_SIZE * SYMBOL_BIT_SIZE, true);
+        dataIndex = fillFloatFromText(dataToFill, previousErrorWindow, dataIndex, dataIndex + PREVIOUS_ERROR_WINDOW_SIZE * SYMBOL_BIT_SIZE, true);
+        dataIndex = fillFloatFromText(dataToFill, mainWindow, dataIndex, dataIndex + MAIN_WINDOW_SIZE * SYMBOL_BIT_SIZE, false);
+        if (dataIndex != NUMBER_OF_INPUTS_CLASS_A)
+            throw new RuntimeException("dataIndex != NUMBER_OF_INPUTS_CLASS_A");
+    }
+
     public static void testModel(BufferedReader reader, final List<MultiLayerNetwork> previousModels, final List<MultiLayerNetwork> models, final SpellingErrorGeneratorGerman errorGenerator, final Random random, final int numberOfTests) throws IOException
     {
         final float[] data = new float[NUMBER_OF_INPUTS_CLASS_A];

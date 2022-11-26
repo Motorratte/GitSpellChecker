@@ -56,7 +56,8 @@ public class Trainer
         if (new java.io.File(saveModelPath).exists())
         {
             if(addToSaveModelPathIfModelExists == null)
-                addToSaveModelPathIfModelExists = "New.net";
+                addToSaveModelPathIfModelExists = "New";
+            addToSaveModelPathIfModelExists = addToSaveModelPathIfModelExists + ".net";
             System.out.println("Loading model from path: " + saveModelPath);
             model = ModelManager.loadModel(saveModelPath);
             System.out.println("Model loaded!");
@@ -116,9 +117,9 @@ public class Trainer
             }
             if((epoch + 1) % 5 == 0)
             {
-                saveModelPath = saveModelPath.substring(0,saveModelPath.lastIndexOf('.'));
-                saveModelPath = saveModelPath + epoch + ".net";
-                ModelManager.saveModel(model, saveModelPath);
+                String temporaryPath = saveModelPath.substring(0,saveModelPath.lastIndexOf('.'));
+                temporaryPath = temporaryPath + (epoch + 1) + ".net";
+                ModelManager.saveModel(model, temporaryPath);
             }
         }
         ModelManager.saveModel(model, saveModelPath);

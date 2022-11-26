@@ -18,6 +18,6 @@ public class TrainerExecutioner
         previousModelList.add(ModelManager.loadModel("src/main/java/learning/train/saves/testModelMiddle2New.net"));
         previousModelList.add(ModelManager.loadModel("src/main/java/learning/train/saves/testModelMiddle2New.net"));
 
-        trainer.train(60,10,null,"src/main/java/learning/train/saves/modelC.net" ,"+");
+        trainer.train(120,10,null,"src/main/java/learning/train/saves/model.net" ,"X");
     }
 }

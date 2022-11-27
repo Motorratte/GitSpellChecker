@@ -1,18 +1,20 @@
 package execution;
 
 import learning.train.ModelManager;
+import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 
 public class CorrectorExecutioner
 {
     public static void main(String[] args)
     {
         System.out.println("Starting Corrector");
-        //print current path
-        System.out.println("Current path: " + System.getProperty("user.dir"));
-        final Corrector corrector = new Corrector(ModelManager.loadModel("src/main/java/learning/train/saves/modelB4914192429343944495459.net"));
+        ArrayList<MultiLayerNetwork> modelList = new ArrayList<>();
+        modelList.add(ModelManager.loadModel("src/main/java/learning/train/saves/modelX85.net"));
+        final Corrector corrector = new Corrector(modelList);
         InputStreamReader isr = new InputStreamReader(System.in);
         BufferedReader br = new BufferedReader(isr);
         while(true)

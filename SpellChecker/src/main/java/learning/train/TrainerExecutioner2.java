@@ -12,12 +12,12 @@ public class TrainerExecutioner2
         System.out.println("Starting Trainer");
         //print current path
         System.out.println("Current path: " + System.getProperty("user.dir"));
-        final Trainer trainer = new Trainer("src/main/java/learning/train/data/europarl-v7.de-en.datade", 128);
+        final Trainer trainer = new Trainer("src/main/java/learning/train/data/europarl-v7.de-en.datade", 256);
         ArrayList<MultiLayerNetwork> previousModelList = new ArrayList<>();
         previousModelList.add(ModelManager.loadModel("src/main/java/learning/train/saves/testModelHeavyNew.net"));
         previousModelList.add(ModelManager.loadModel("src/main/java/learning/train/saves/testModelMiddle2New.net"));
         previousModelList.add(ModelManager.loadModel("src/main/java/learning/train/saves/testModelMiddle2New.net"));
 
-        trainer.train(120,10,null,"src/main/java/learning/train/saves/model.net" ,"T");
+        trainer.train(120,10,null,"src/main/java/learning/train/saves/modelNext.net" ,"B");
     }
 }

@@ -24,8 +24,7 @@ public class FailureRateTest
         //modelList.add(ModelManager.loadModel("src/main/java/learning/train/saves/testModel.net"));
         //modelList.add(ModelManager.loadModel("src/main/java/learning/train/saves/testModelHeavy.net"));
         ArrayList<MultiLayerNetwork> modelList2 = new ArrayList<>();
-        modelList2.add(ModelManager.loadModel("src/main/java/learning/train/saves/modelX90.net"));
-        modelList2.add(ModelManager.loadModel("src/main/java/learning/train/saves/modelT65.net"));
+        modelList2.add(ModelManager.loadModel("src/main/java/learning/train/saves/modelT120.net"));
 
         try (BufferedReader reader = new BufferedReader(new FileReader("src/main/java/learning/train/data/europarl-v7.de-en.datade")))
         {

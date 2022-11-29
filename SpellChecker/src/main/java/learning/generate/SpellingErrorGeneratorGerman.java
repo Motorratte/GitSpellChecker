@@ -28,7 +28,7 @@ public class SpellingErrorGeneratorGerman
 
     private final Random random = new Random();
     private final float ERROR_CHANCES_VARIATION_FACTOR_MIN = 0.0f;
-    private final float ERROR_CHANCES_VARIATION_FACTOR_MAX = 0.3f;
+    private final float ERROR_CHANCES_VARIATION_FACTOR_MAX = 0.2f;
     private float errorChancesVariationFactor;
     private final float LETTER_CHANCE_FOR_RANDOM_SYMBOL = 0.95f;
     private final float RANDOM_SYMBOL_INSERTION_CHANCE_MIN = 0.0f;
@@ -59,7 +59,7 @@ public class SpellingErrorGeneratorGerman
     private final float EMPTY_SPACE_INSERTION_CHANCE_MAX = 0.15f;
     private float emptySpaceInsertionChance;
     private final float EMPTY_SPACE_DELETION_CHANCE_MIN = 0.0f;
-    private final float EMPTY_SPACE_DELETION_CHANCE_MAX = 0.6f;
+    private final float EMPTY_SPACE_DELETION_CHANCE_MAX = 0.3f;
     private float emptySpaceDeletionChance;
     private final float DOUBLE_LETTER_FAILURE_CHANCE_MIN = 0.0f;
     private final float DOUBLE_LETTER_FAILURE_CHANCE_MAX = 0.1f;
@@ -209,10 +209,14 @@ public class SpellingErrorGeneratorGerman
     {
         derDieDasMap.put("der", new String[]{"die", "das"});
         derDieDasMap.put("Der", new String[]{"Die", "Das"});
-        derDieDasMap.put("die", new String[]{"der", "das"});
-        derDieDasMap.put("Die", new String[]{"Der", "Das"});
-        derDieDasMap.put("das", new String[]{"die", "der"});
-        derDieDasMap.put("Das", new String[]{"Die", "Der"});
+        derDieDasMap.put("die", new String[]{"der", "das", "wie", "sie"});
+        derDieDasMap.put("Die", new String[]{"Der", "Das", "Wie", "Sie"});
+        derDieDasMap.put("das", new String[]{"die", "der", "was"});
+        derDieDasMap.put("Das", new String[]{"Die", "Der", "Was"});
+        derDieDasMap.put("wie", new String[]{"die", "sie"});
+        derDieDasMap.put("Wie", new String[]{"Die", "Sie"});
+        derDieDasMap.put("sie", new String[]{"die", "wie"});
+        derDieDasMap.put("Sie", new String[]{"Die", "Wie"});
     }
 
     private void initDasDaßDassMap()

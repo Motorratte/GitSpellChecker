@@ -28,7 +28,7 @@ public class SpellingErrorGeneratorGerman
 
     private final Random random = new Random();
     private final float ERROR_CHANCES_VARIATION_FACTOR_MIN = 0.0f;
-    private final float ERROR_CHANCES_VARIATION_FACTOR_MAX = 0.2f;
+    private final float ERROR_CHANCES_VARIATION_FACTOR_MAX = 0.3f;
     private float errorChancesVariationFactor;
     private final float LETTER_CHANCE_FOR_RANDOM_SYMBOL = 0.95f;
     private final float RANDOM_SYMBOL_INSERTION_CHANCE_MIN = 0.0f;
@@ -38,7 +38,7 @@ public class SpellingErrorGeneratorGerman
     private final float RANDOM_SYMBOL_DELETION_CHANCE_MAX = 0.04f;
     private float randomSymbolDeletionChance;
     private final float RANDOM_SYMBOL_SUBSTITUTION_CHANCE_MIN = 0.0f;
-    private final float RANDOM_SYMBOL_SUBSTITUTION_CHANCE_MAX = 0.04f;
+    private final float RANDOM_SYMBOL_SUBSTITUTION_CHANCE_MAX = 0.08f;
     private float randomSymbolSubstitutionChance;
     private final float RANDOM_COMMA_INSERTION_CHANCE_MIN = 0.0f;
     private final float RANDOM_COMMA_INSERTION_CHANCE_MAX = 0.04f;
@@ -53,7 +53,7 @@ public class SpellingErrorGeneratorGerman
     private final float UPPER_LOWER_CASE_FAILURE_CHANCE_MAX = 0.05f;
     private float upperLowerCaseFailureChance;
     private final float UPPER_LOWER_CASE_FAILURE_CHANCE_FOR_FIRST_LETTER_MIN = 0.0f;
-    private final float UPPER_LOWER_CASE_FAILURE_CHANCE_FOR_FIRST_LETTER_MAX = 0.2f;
+    private final float UPPER_LOWER_CASE_FAILURE_CHANCE_FOR_FIRST_LETTER_MAX = 1.0f;
     private float upperLowerCaseFailureChanceForFirstLetter;
     private final float EMPTY_SPACE_INSERTION_CHANCE_MIN = 0.0f;
     private final float EMPTY_SPACE_INSERTION_CHANCE_MAX = 0.15f;
@@ -68,7 +68,7 @@ public class SpellingErrorGeneratorGerman
     private final float SIMILAR_LETTER_FAILURE_CHANCE_MAX = 0.1f;
     private float similarLetterFailureChance;
     private final float MISTYPE_FAILURE_CHANCE_MIN = 0.0f;
-    private final float MISTYPE_FAILURE_CHANCE_MAX = 0.2f;
+    private final float MISTYPE_FAILURE_CHANCE_MAX = 0.3f;
     private float mistypeFailureChance;
     private float WRONG_WORD_BEGINNING_CHANCE_MIN = 0.0f;
     private float WRONG_WORD_BEGINNING_CHANCE_MAX = 0.1f;

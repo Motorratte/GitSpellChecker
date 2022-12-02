@@ -13,8 +13,10 @@ public class CorrectorExecutioner
     {
         System.out.println("Starting Corrector");
         ArrayList<MultiLayerNetwork> modelList = new ArrayList<>();
-        modelList.add(ModelManager.loadModel("src/main/java/learning/train/saves/modelNextB5.net"));
-        modelList.add(ModelManager.loadModel("src/main/java/learning/train/saves/modelNextA5.net"));
+        modelList.add(ModelManager.loadModel("src/main/java/learning/train/saves/modelNextB75.net"));
+        modelList.add(ModelManager.loadModel("src/main/java/learning/train/saves/modelNextB30.net"));
+        modelList.add(ModelManager.loadModel("src/main/java/learning/train/saves/modelNextA75.net"));
+        modelList.add(ModelManager.loadModel("src/main/java/learning/train/saves/modelNextA30.net"));
         final Corrector corrector = new Corrector(modelList);
         InputStreamReader isr = new InputStreamReader(System.in);
         BufferedReader br = new BufferedReader(isr);

@@ -39,7 +39,7 @@ public class ModelManager
     public static final int MAIN_WINDOW_SIZE = NUMBER_OF_OUTPUT_SYMBOLS + PREVIOUS_WINDOW_SIZE;
     public static final int MIN_TEXT_SIZE_FOR_SPELLCHECK = 3;
     public static final int NUMBER_OF_INPUTS_CLASS_A = (PREVIOUS_WINDOW_SIZE + PREVIOUS_ERROR_WINDOW_SIZE + MAIN_WINDOW_SIZE) * SYMBOL_BIT_SIZE; //896Korregiertvorher 384unkorregiertvorher 8Korrektur 896restfenster = 2440
-    public static final int NUMBER_OF_INPUTS_CLASS_B = (NUMBER_OF_OUTPUT_SYMBOLS * 3 + PREVIOUS_WINDOW_SIZE + PREVIOUS_ERROR_WINDOW_SIZE + MAIN_WINDOW_SIZE) * SYMBOL_BIT_SIZE; //24PreviousOutputs 1024Korregiertvorher 384unkorregiertvorher 8Korrektur 1024restfenster = 2464
+    public static final int NUMBER_OF_INPUTS_CLASS_B = (NUMBER_OF_OUTPUT_SYMBOLS * 2 + PREVIOUS_WINDOW_SIZE + PREVIOUS_ERROR_WINDOW_SIZE + MAIN_WINDOW_SIZE) * SYMBOL_BIT_SIZE; //24PreviousOutputs 1024Korregiertvorher 384unkorregiertvorher 8Korrektur 1024restfenster = 2464
     public static final int MAX_CHAR_VALUE = (1 << SYMBOL_BIT_SIZE) - 1;
 
     public static MultiLayerNetwork createSpellingErrorCorrectionModelA()
@@ -105,7 +105,7 @@ public class ModelManager
         final MultiLayerConfiguration conf = builder.build();
         final MultiLayerNetwork model = new MultiLayerNetwork(conf);
         model.init();
-        model.setListeners(new ScoreIterationListener(1));
+        model.setListeners(new ScoreIterationListener(10));
         return model;
     }
 
@@ -254,7 +254,7 @@ public class ModelManager
     public static void testModel(BufferedReader reader, final List<MultiLayerNetwork> previousModels, final List<MultiLayerNetwork> models, final SpellingErrorGeneratorGerman errorGenerator, final Random random, final int numberOfTests) throws IOException
     {
         final float[] data = new float[NUMBER_OF_INPUTS_CLASS_A];
-        final float[] dataB = (previousModels == null || previousModels.size() == 0) ? null : new float[NUMBER_OF_INPUTS_CLASS_B];
+        final float[] dataB = (previousModels == null || previousModels.size() == 0) ? null : new float[NUMBER_OF_INPUTS_CLASS_A + previousModels.size() * NUMBER_OF_OUTPUTS];
         final float[] labels = new float[NUMBER_OF_OUTPUTS];
         int correct = 0;
         int failureCorrected = 0;

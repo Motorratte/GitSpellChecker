@@ -17,6 +17,6 @@ public class TrainerExecutioner2
         previousModelList.add(ModelManager.loadModel("src/main/java/learning/train/saves/modelNextA120.net"));
         previousModelList.add(ModelManager.loadModel("src/main/java/learning/train/saves/modelNextB120.net"));
 
-        trainer.train(300,10,previousModelList,"src/main/java/learning/train/saves/ModelOptimicerLight.net" ,"R");
+        trainer.train(150,10,previousModelList,"src/main/java/learning/train/saves/ModelOptimicerLight175.net" ,"K");
     }
 }

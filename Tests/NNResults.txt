@@ -1,0 +1,217 @@
+modelA4:
+Correct: 28144/30000
+Failure Corrected: 364/2094  17,8%
+Failure Produced: 126
+
+modelB4:
+Correct: 28526/30000
+Failure Corrected: 723/2015  35,9%
+Failure Produced: 182
+
+modelA49:
+Correct: 28310/30000
+Failure Corrected: 534/2060 25,9%
+Failure Produced: 164
+
+modelB49:
+Correct: 28737/30000
+Failure Corrected: 957/2036 47,0%
+Failure Produced: 184
+
+modelA4914:
+Correct: 28518/30000
+Failure Corrected: 697/2089 33,4%
+Failure Produced: 90
+
+modelB4914:
+Correct: 28860/30000
+Failure Corrected: 1079/2064 52,2%
+Failure Produced: 155
+
+modelA491419:
+Correct: 28512/30000
+Failure Corrected: 947/2201 43,0%
+Failure Produced: 234
+
+modelB491419:
+Correct: 28877/30000
+Failure Corrected: 1174/2143 54,8%
+Failure Produced: 154
+
+modelA49141924:
+Correct: 28767/30000
+Failure Corrected: 993/2099 47,3%
+Failure Produced: 127
+
+modelB49141924:
+Correct: 29009/30000
+Failure Corrected: 1360/2232 60,9%
+Failure Produced: 119
+
+modelA4914192429:
+Correct: 28791/30000
+Failure Corrected: 1040/2059 50,5%
+Failure Produced: 190
+
+modelB4914192429:
+Correct: 29110/30000
+Failure Corrected: 1231/2003 62,7%
+Failure Produced: 118
+
+modelA491419242934:
+Correct: 28879/30000
+Failure Corrected: 1154/2135 54,0%
+Failure Produced: 140
+
+modelB491419242934:
+Correct: 29139/30000
+Failure Corrected: 1323/2066 64,0%
+Failure Produced: 118
+
+modelA49141924293439:
+Correct: 28937/30000
+Failure Corrected: 1212/2123 57,1%
+Failure Produced: 152
+
+modelB49141924293439:
+Correct: 29128/30000
+Failure Corrected: 1294/2076 62,3%
+Failure Produced: 90
+
+modelA4914192429343944:
+Correct: 28933/30000
+Failure Corrected: 1311/2251 58,2%
+Failure Produced: 127
+
+modelB4914192429343944:
+Correct: 29177/30000
+Failure Corrected: 1403/2127 66,0%
+Failure Produced: 99
+
+modelA491419242934394449:
+Correct: 29094/30000
+Failure Corrected: 1266/2054 61,6%
+Failure Produced: 118
+
+modelB491419242934394449:
+Correct: 29184/30000
+Failure Corrected: 1441/2155 66,9%
+Failure Produced: 102
+
+modelA49141924293439444954:
+Correct: 29062/30000
+Failure Corrected: 1353/2157 62,7%
+Failure Produced: 134
+
+
+modelB49141924293439444954:
+Correct: 29247/30000
+Failure Corrected: 1465/2119 69,1%
+Failure Produced: 99
+
+modelA4914192429343944495459:
+Correct: 29066/30000
+Failure Corrected: 1306/2125 61,5%
+Failure Produced: 115
+
+modelB4914192429343944495459:
+Correct: 29261/30000
+Failure Corrected: 1425/2066 69,0%
+Failure Produced: 98
+
+modelT5:
+Correct: 29244/30000
+Failure Corrected: 1454/2119 68,6%
+Failure Produced: 91
+
+modelT35:
+Correct: 29339/30000
+Failure Corrected: 1574/2155 73,0%
+Failure Produced: 80
+
+modelX35:
+Correct: 29387/30000
+Failure Corrected: 1685/2174 77,5%
+Failure Produced: 124
+
+modelX45:
+Correct: 29435/30000
+Failure Corrected: 1636/2082 78,6%
+Failure Produced: 119
+
+modelT60:
+Correct: 29394/30000
+Failure Corrected: 1636/2160 75,7%
+Failure Produced: 82
+
+modelX85:
+Correct: 29473/30000
+Failure Corrected: 1698/2109 80,5%
+Failure Produced: 116
+
+lastTwoAModelsCombined:
+Correct: 29154/30000
+Failure Corrected: 1367/2129 64,2%
+Failure Produced: 84
+
+Correct: 9717/10000
+Failure Corrected: 455/710  64,1%
+Failure Produced: 28
+
+Correct: 29522/30000
+Failure Corrected: 1759/2170 81,1%
+Failure Produced: 67
+
+Correct: 29484/30000
+Failure Corrected: 1658/2123
+Failure Produced: 51
+
+ModelA30:
+Correct: 29341/30000
+Failure Corrected: 3114/3699 84,2%
+Failure Produced: 74
+
+ModelB30:
+Correct: 29386/30000
+Failure Corrected: 3184/3695 86,2%
+Failure Produced: 103
+
+ModelA75:
+Correct: 29353/30000
+Failure Corrected: 3174/3743 84,8%
+Failure Produced: 78
+
+ModelB75:
+Correct: 29440/30000
+Failure Corrected: 3223/3674 87,7%
+Failure Produced: 109
+
+ModelOptimicerHeavy20:
+Correct: 29459/30000
+Failure Corrected: 3291/3728 88,3%
+Failure Produced: 104
+
+MoldelOptimicerLight20:
+Correct: 29425/30000
+Failure Corrected: 3313/3793 87,3%
+Failure Produced: 95
+
+ModelOptimicerHeavy45:
+Correct: 29484/30000
+Failure Corrected: 3288/3691 89,1%
+Failure Produced: 113
+
+ModelOptimicerLight45:
+Correct: 29457/30000
+Failure Corrected: 3263/3723 87,6%
+Failure Produced: 83
+
+ModelOptimicerHeavy90:
+Correct: 29469/30000
+Failure Corrected: 3297/3711 88,8%
+Failure Produced: 117
+
+ModelOptimicerLight90:
+Correct: 29458/30000
+Failure Corrected: 3267/3712 88,0%
+Failure Produced: 97
